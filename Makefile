@@ -8,7 +8,7 @@ VERSION := latest
 
 BUILD_VERSION := latest
 
-all: build proxy registry compiler
+all: atomix atomix-build atomix-proxy atomix-registry atomix-compiler
 
 api:
 	@cd api && (rm -r **/*.pb.go **/*.md || true) && cd ..
@@ -16,23 +16,38 @@ api:
 		--entrypoint build/bin/compile-protos.sh \
 		`docker build -q build/docker/api`
 
-atomix-build:
+atomix:
+	goreleaser build --single-target
 
 atomix-proxy:
+	docker build \
+		-f build/docker/proxy/Dockerfile \
+		-t atomix/atomix-proxy:$(VERSION) .
+
+atomix-build:
+	docker build \
+		-f build/docker/build/Dockerfile \
+		-t atomix/atomix-plugin-build:$(VERSION) .
 
 atomix-registry:
 	docker build \
 		-f build/docker/registry/Dockerfile \
 		-t atomix/atomix-plugin-registry:$(VERSION) \
-		--build-arg BUILD_VERSION=$(BUILD_VERSION) .
+		--build-arg BUILD_VERSION=$(VERSION) .
 
 atomix-compiler:
 	docker build \
 		-f build/docker/compiler/Dockerfile \
 		-t atomix/atomix-plugin-compiler:$(VERSION) \
-		--build-arg BUILD_VERSION=$(BUILD_VERSION) .
+		--build-arg BUILD_VERSION=$(VERSION) .
 
 images: atomix-build atomix-proxy atomix-registry atomix-compiler
+
+test-release:
+	goreleaser release --snapshot --rm-dist
+
+release:
+	goreleaser release
 
 reuse-tool: # @HELP install reuse if not present
 	command -v reuse || python3 -m pip install reuse

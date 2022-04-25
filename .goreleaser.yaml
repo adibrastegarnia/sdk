@@ -5,7 +5,11 @@ before:
     - go mod tidy
     - go generate ./...
 builds:
-  - env:
+  - id: atomix
+    main: github.com/atomix/atomix-runtime/cmd/atomix
+    binary: atomix
+    ldflags: -s -w -X github.com/atomix/atomix-runtime/pkg/version.version={{.Version}} -X github.com/atomix/atomix-runtime/pkg/version.commit={{.Commit}}
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
