@@ -3,6 +3,8 @@
 before:
   hooks:
     - go mod tidy
+builds:
+  - skip: true
 dockers:
   - id: go-build
     dockerfile: build/docker/go-build.Dockerfile
