@@ -18,7 +18,7 @@ service Controller {
 
 message Cluster {
     string name = 1;
-    string type = 2;
+    string driver = 2;
     string version = 3;
     bytes data = 4;
 }

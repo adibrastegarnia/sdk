@@ -32,7 +32,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  |  |
-| type | [string](#string) |  |  |
+| driver | [string](#string) |  |  |
 | version | [string](#string) |  |  |
 | data | [bytes](#bytes) |  |  |
 
