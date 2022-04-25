@@ -3,8 +3,6 @@ module github.com/atomix/atomix-runtime
 go 1.18
 
 require (
-	github.com/atomix/atomix-grpc v0.0.0-20220422180700-264c30687bc5
-	github.com/atomix/atomix-logging v0.0.0-20220422181344-635d1888c587
 	github.com/gogo/protobuf v1.3.2
 	github.com/rogpeppe/go-internal v1.8.1
 	github.com/spf13/cobra v1.4.0
