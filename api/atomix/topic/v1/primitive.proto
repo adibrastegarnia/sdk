@@ -1,0 +1,97 @@
+/*
+SPDX-FileCopyrightText: 2022-present Open Networking Foundation <info@opennetworking.org>
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
+syntax = "proto3";
+
+package atomix.topic.v1;
+
+import "atomix/atom/v1/descriptor.proto";
+import "gogoproto/gogo.proto";
+import "atomix/atom/meta/v1/headers.proto";
+import "google/protobuf/timestamp.proto";
+
+service Topic {
+    option (atomix.atom.v1.primitive_type) = "Topic";
+    option (atomix.atom.v1.service_type) = SERVER;
+
+    rpc Publish(PublishRequest) returns (PublishResponse) {
+        option (atomix.atom.v1.operation_id) = 3;
+        option (atomix.atom.v1.operation_type) = COMMAND;
+    }
+
+    rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {
+        option (atomix.atom.v1.operation_id) = 4;
+        option (atomix.atom.v1.operation_type) = QUERY;
+    }
+}
+
+message PublishRequest {
+    atomix.atom.meta.v1.RequestHeaders headers = 1 [
+        (atomix.atom.v1.headers) = true,
+        (gogoproto.nullable) = false
+    ];
+    PublishInput input = 2 [
+        (atomix.atom.v1.input) = true,
+        (gogoproto.nullable) = false,
+        (gogoproto.embed) = true
+    ];
+}
+
+message PublishInput {
+    bytes payload = 1;
+}
+
+message PublishResponse {
+    atomix.atom.meta.v1.ResponseHeaders headers = 1 [
+        (atomix.atom.v1.headers) = true,
+        (gogoproto.nullable) = false
+    ];
+    PublishOutput output = 2 [
+        (atomix.atom.v1.output) = true,
+        (gogoproto.nullable) = false,
+        (gogoproto.embed) = true
+    ];
+}
+
+message PublishOutput {
+
+}
+
+message SubscribeRequest {
+    atomix.atom.meta.v1.RequestHeaders headers = 1 [
+        (atomix.atom.v1.headers) = true,
+        (gogoproto.nullable) = false
+    ];
+    SubscribeInput input = 2 [
+        (atomix.atom.v1.input) = true,
+        (gogoproto.nullable) = false,
+        (gogoproto.embed) = true
+    ];
+}
+
+message SubscribeInput {
+
+}
+
+message SubscribeResponse {
+    atomix.atom.meta.v1.ResponseHeaders headers = 1 [
+        (atomix.atom.v1.headers) = true,
+        (gogoproto.nullable) = false
+    ];
+    SubscribeOutput output = 2 [
+        (atomix.atom.v1.output) = true,
+        (gogoproto.nullable) = false,
+        (gogoproto.embed) = true
+    ];
+}
+
+message SubscribeOutput {
+    uint64 offset = 1;
+    google.protobuf.Timestamp timestamp = 2 [
+        (gogoproto.stdtime) = true
+    ];
+    bytes payload = 3;
+}

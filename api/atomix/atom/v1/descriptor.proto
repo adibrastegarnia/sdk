@@ -1,0 +1,58 @@
+/*
+SPDX-FileCopyrightText: 2022-present Open Networking Foundation <info@opennetworking.org>
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
+syntax = "proto3";
+
+package atomix.atom.v1;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.ServiceOptions {
+    string primitive_type = 50000;
+    ServiceType service_type = 50001;
+    bool partitioned = 50002;
+}
+
+enum ServiceType {
+    SERVER = 0;
+    MANAGER = 1;
+}
+
+extend google.protobuf.MethodOptions {
+    PartitionStrategy partition_strategy = 51000;
+}
+
+extend google.protobuf.FieldOptions {
+    bool headers = 52000;
+    bool input = 52001;
+    bool output = 52002;
+    bool partition_key = 52003;
+    bool partition_range = 52004;
+}
+
+// PartitionStrategy is an enum for indicating the strategy used to partition a primitive
+enum PartitionStrategy {
+    NONE = 0;
+    HASH = 1;
+    RANGE = 2;
+    RANDOM = 3;
+    ROUND_ROBIN = 4;
+}
+
+extend google.protobuf.MethodOptions {
+    string operation_name = 52000;
+    OperationType operation_type = 52001;
+    bool operation_async = 52002;
+    uint32 operation_id = 52003;
+}
+
+// OperationType is an enum for specifying the type of operation
+enum OperationType {
+    COMMAND = 0;
+    QUERY = 1;
+    CREATE = 2;
+    CLOSE = 3;
+}

@@ -1,0 +1,57 @@
+/*
+SPDX-FileCopyrightText: 2022-present Open Networking Foundation <info@opennetworking.org>
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
+syntax = "proto3";
+
+package atomix.runtime.v1;
+
+import "gogoproto/gogo.proto";
+
+// The plugin registry service provides plugins for runtime proxies.
+service PluginRegistry {
+    rpc PullPlugin(PullPluginRequest) returns (stream PullPluginResponse);
+}
+
+message RuntimeInfo {
+    string version = 1;
+    string build_version = 2;
+}
+
+message PluginInfo {
+    string name = 1;
+    string version = 2;
+}
+
+message PullPluginRequest {
+    RuntimeInfo runtime = 1 [
+        (gogoproto.nullable) = false
+    ];
+    PluginInfo plugin = 2 [
+        (gogoproto.nullable) = false
+    ];
+}
+
+message PullPluginResponse {
+    bytes data = 1;
+}
+
+// The plugin compiler service compiles plugins for runtime proxies.
+service PluginCompiler {
+    rpc CompilePlugin(CompilePluginRequest) returns (CompilePluginResponse);
+}
+
+message CompilePluginRequest {
+    RuntimeInfo runtime = 1 [
+        (gogoproto.nullable) = false
+    ];
+    PluginInfo plugin = 2 [
+        (gogoproto.nullable) = false
+    ];
+}
+
+message CompilePluginResponse {
+    string plugin = 1;
+}
