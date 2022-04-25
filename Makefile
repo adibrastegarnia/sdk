@@ -8,24 +8,11 @@ VERSION := latest
 
 BUILD_VERSION := latest
 
-api-go:
+api:
 	@cd api && (rm -r **/*.pb.go **/*.md || true) && cd ..
-	docker run -it -v `pwd`:/build atomix/atomix-build:latest \
-		api go \
-		--input api \
-		--output api \
-		--package github.com/atomix/atomix-runtime/api \
-		.
-
-api-docs:
-	@cd api && (rm -r **/*.md || true) && cd ..
-	docker run -it -v `pwd`:/build atomix/atomix-build:latest \
-		api docs \
-		--input api \
-		--output api \
-		.
-
-api: api-go api-docs
+	docker run -it -v `pwd`:/build \
+		--entrypoint build/bin/compile-protos.sh \
+		`docker build -q build/docker/api`
 
 atomix-plugin-registry-docker:
 	docker build \
