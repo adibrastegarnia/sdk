@@ -49,7 +49,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| store | [string](#string) |  |  |
+| name | [string](#string) |  |  |
 
 
 

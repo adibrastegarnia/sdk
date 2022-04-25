@@ -24,7 +24,7 @@ message Cluster {
 }
 
 message GetClusterRequest {
-    string store = 1;
+    string name = 1;
 }
 
 message GetClusterResponse {
