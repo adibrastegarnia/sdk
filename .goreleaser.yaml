@@ -8,14 +8,18 @@ before:
 builds:
   - skip: true
 dockers:
-  - id: go-build
-    dockerfile: build/docker/go-build.Dockerfile
+  - id: runtime-build
+    dockerfile: build/docker/runtime-build.Dockerfile
     image_templates:
-      - atomix/go-build:latest
-      - atomix/go-build:{{ .Tag }}
-      - atomix/go-build:v{{ .Major }}.{{ .Minor }}
+      - atomix/runtime-build:latest
+      - atomix/runtime-build:{{ .Tag }}
+      - atomix/runtime-build:v{{ .Major }}.{{ .Minor }}
     extra_files:
       - go.mod
+      - go.sum
+      - api/
+      - cmd/
+      - pkg/
   - id: proto-build
     dockerfile: build/docker/proto-build.Dockerfile
     image_templates:
