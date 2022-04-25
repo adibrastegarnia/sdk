@@ -10,38 +10,24 @@ BUILD_VERSION := latest
 
 all: atomix atomix-build atomix-proxy atomix-registry atomix-compiler
 
-api:
+api: proto-build
 	@cd api && (rm -r **/*.pb.go **/*.md || true) && cd ..
 	docker run -it -v `pwd`:/build \
 		--entrypoint build/bin/compile-protos.sh \
-		`docker build -q build/docker/api`
+		atomix/proto-build:$(VERSION)
 
 atomix:
 	goreleaser build --single-target
 
-atomix-proxy:
+proto-build:
 	docker build \
-		-f build/docker/proxy/Dockerfile \
-		-t atomix/atomix-proxy:$(VERSION) .
+		-f build/docker/proto-build.Dockerfile \
+		-t atomix/proto-build:$(VERSION) .
 
-atomix-build:
+go-build:
 	docker build \
-		-f build/docker/build/Dockerfile \
-		-t atomix/atomix-plugin-build:$(VERSION) .
-
-atomix-registry:
-	docker build \
-		-f build/docker/registry/Dockerfile \
-		-t atomix/atomix-plugin-registry:$(VERSION) \
-		--build-arg BUILD_VERSION=$(VERSION) .
-
-atomix-compiler:
-	docker build \
-		-f build/docker/compiler/Dockerfile \
-		-t atomix/atomix-plugin-compiler:$(VERSION) \
-		--build-arg BUILD_VERSION=$(VERSION) .
-
-images: atomix-build atomix-proxy atomix-registry atomix-compiler
+		-f build/docker/go-build.Dockerfile \
+		-t atomix/go-build:$(VERSION) .
 
 test-release:
 	goreleaser release --snapshot --rm-dist

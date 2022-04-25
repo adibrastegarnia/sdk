@@ -22,12 +22,6 @@ protoc -I=$proto_path \
   api/atomix/runtime/v1/controller.proto
 
 protoc -I=$proto_path \
-  --doc_out=api/atomix/runtime/v1 \
-  --doc_opt=markdown,plugin.md \
-  --gogofaster_out=$go_import_paths,import_path=github.com/atomix/atomix-runtime/api/atomix/runtime/v1,plugins=grpc:api \
-  api/atomix/runtime/v1/plugin.proto
-
-protoc -I=$proto_path \
   --doc_out=api/atomix/atom/v1 \
   --doc_opt=markdown,descriptor.md \
   --gogofaster_out=$go_import_paths,import_path=github.com/atomix/atomix-runtime/api/atomix/atom/v1,plugins=grpc:api \
