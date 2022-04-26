@@ -19,6 +19,7 @@ dockers:
       - go.sum
       - api/
       - cmd/
+      - internal/
       - pkg/
   - id: proto-build
     dockerfile: build/docker/proto-build.Dockerfile
