@@ -6,7 +6,7 @@ package runtime
 
 import (
 	"context"
-	"github.com/atomix/atomix-runtime/pkg/errors"
+	"github.com/atomix/runtime-api/pkg/errors"
 	"sync"
 )
 

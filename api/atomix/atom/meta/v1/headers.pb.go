@@ -5,7 +5,7 @@ package v1
 
 import (
 	fmt "fmt"
-	v1 "github.com/atomix/atomix-runtime/api/atomix/atom/v1"
+	v1 "github.com/atomix/runtime-api/api/atomix/atom/v1"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	io "io"

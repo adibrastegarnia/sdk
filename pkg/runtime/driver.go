@@ -6,7 +6,7 @@ package runtime
 
 import (
 	"context"
-	"github.com/atomix/atomix-runtime/pkg/config"
+	"github.com/atomix/runtime-api/pkg/config"
 )
 
 type Driver[C config.Config] interface {

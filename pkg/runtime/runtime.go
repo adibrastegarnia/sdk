@@ -6,7 +6,7 @@ package runtime
 
 import (
 	"context"
-	"github.com/atomix/atomix-runtime/pkg/logging"
+	"github.com/atomix/runtime-api/pkg/logging"
 )
 
 var log = logging.GetLogger()
