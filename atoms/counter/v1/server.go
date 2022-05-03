@@ -11,14 +11,14 @@ import (
 	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newCounterV1Server(proxies *atom.Registry[CounterProxy]) counterv1.CounterServer {
+func newCounterV1Server(proxies *atom.Registry[Counter]) counterv1.CounterServer {
 	return &counterV1Server{
 		proxies: proxies,
 	}
 }
 
 type counterV1Server struct {
-	proxies *atom.Registry[CounterProxy]
+	proxies *atom.Registry[Counter]
 }
 
 func (s *counterV1Server) Set(ctx context.Context, request *counterv1.SetRequest) (*counterv1.SetResponse, error) {

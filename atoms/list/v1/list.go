@@ -12,24 +12,24 @@ import (
 	"google.golang.org/grpc"
 )
 
-var Atom = atom.New[ListProxy](clientFactory, func(server *grpc.Server, service *atom.Service[ListProxy], registry *atom.Registry[ListProxy]) {
+var Atom = atom.New[List](clientFactory, func(server *grpc.Server, service *atom.Service[List], registry *atom.Registry[List]) {
 	listv1.RegisterListManagerServer(server, newListV1ManagerServer(service))
 	listv1.RegisterListServer(server, newListV1Server(registry))
 })
 
-// clientFactory is the counter/v1 client factory
-var clientFactory = atom.NewClientFactory[ListProxy](func(client driver.Client) (*atom.Client[ListProxy], bool) {
-	if counterClient, ok := client.(ListClient); ok {
-		return atom.NewClient[ListProxy](counterClient.GetList), true
+// clientFactory is the list/v1 client factory
+var clientFactory = atom.NewClientFactory[List](func(client driver.Client) (*atom.Client[List], bool) {
+	if listClient, ok := client.(ListClient); ok {
+		return atom.NewClient[List](listClient.GetList), true
 	}
 	return nil, false
 })
 
 type ListClient interface {
-	GetList(ctx context.Context, name string) (ListProxy, error)
+	GetList(ctx context.Context, name string) (List, error)
 }
 
-type ListProxy interface {
+type List interface {
 	atom.Atom
 	listv1.ListServer
 }

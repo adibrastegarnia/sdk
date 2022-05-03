@@ -12,24 +12,24 @@ import (
 	"google.golang.org/grpc"
 )
 
-var Atom = atom.New[ValueProxy](clientFactory, func(server *grpc.Server, service *atom.Service[ValueProxy], registry *atom.Registry[ValueProxy]) {
+var Atom = atom.New[Value](clientFactory, func(server *grpc.Server, service *atom.Service[Value], registry *atom.Registry[Value]) {
 	valuev1.RegisterValueManagerServer(server, newValueV1ManagerServer(service))
 	valuev1.RegisterValueServer(server, newValueV1Server(registry))
 })
 
-// clientFactory is the counter/v1 client factory
-var clientFactory = atom.NewClientFactory[ValueProxy](func(client driver.Client) (*atom.Client[ValueProxy], bool) {
-	if counterClient, ok := client.(ValueClient); ok {
-		return atom.NewClient[ValueProxy](counterClient.GetValue), true
+// clientFactory is the value/v1 client factory
+var clientFactory = atom.NewClientFactory[Value](func(client driver.Client) (*atom.Client[Value], bool) {
+	if valueClient, ok := client.(ValueClient); ok {
+		return atom.NewClient[Value](valueClient.GetValue), true
 	}
 	return nil, false
 })
 
 type ValueClient interface {
-	GetValue(ctx context.Context, name string) (ValueProxy, error)
+	GetValue(ctx context.Context, name string) (Value, error)
 }
 
-type ValueProxy interface {
+type Value interface {
 	atom.Atom
 	valuev1.ValueServer
 }

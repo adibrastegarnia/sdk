@@ -11,14 +11,14 @@ import (
 	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newLeaderElectionV1Server(proxies *atom.Registry[LeaderElectionProxy]) electionv1.LeaderElectionServer {
+func newLeaderElectionV1Server(proxies *atom.Registry[LeaderElection]) electionv1.LeaderElectionServer {
 	return &leaderElectionV1Server{
 		proxies: proxies,
 	}
 }
 
 type leaderElectionV1Server struct {
-	proxies *atom.Registry[LeaderElectionProxy]
+	proxies *atom.Registry[LeaderElection]
 }
 
 func (s *leaderElectionV1Server) Enter(ctx context.Context, request *electionv1.EnterRequest) (*electionv1.EnterResponse, error) {

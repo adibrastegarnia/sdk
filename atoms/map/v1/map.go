@@ -12,24 +12,24 @@ import (
 	"google.golang.org/grpc"
 )
 
-var Atom = atom.New[MapProxy](clientFactory, func(server *grpc.Server, service *atom.Service[MapProxy], registry *atom.Registry[MapProxy]) {
+var Atom = atom.New[Map](clientFactory, func(server *grpc.Server, service *atom.Service[Map], registry *atom.Registry[Map]) {
 	mapv1.RegisterMapManagerServer(server, newMapV1ManagerServer(service))
 	mapv1.RegisterMapServer(server, newMapV1Server(registry))
 })
 
-// clientFactory is the counter/v1 client factory
-var clientFactory = atom.NewClientFactory[MapProxy](func(client driver.Client) (*atom.Client[MapProxy], bool) {
-	if counterClient, ok := client.(MapClient); ok {
-		return atom.NewClient[MapProxy](counterClient.GetMap), true
+// clientFactory is the map/v1 client factory
+var clientFactory = atom.NewClientFactory[Map](func(client driver.Client) (*atom.Client[Map], bool) {
+	if mapClient, ok := client.(MapClient); ok {
+		return atom.NewClient[Map](mapClient.GetMap), true
 	}
 	return nil, false
 })
 
 type MapClient interface {
-	GetMap(ctx context.Context, name string) (MapProxy, error)
+	GetMap(ctx context.Context, name string) (Map, error)
 }
 
-type MapProxy interface {
+type Map interface {
 	atom.Atom
 	mapv1.MapServer
 }

@@ -11,14 +11,14 @@ import (
 	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newListV1ManagerServer(proxies *atom.Service[ListProxy]) listv1.ListManagerServer {
+func newListV1ManagerServer(proxies *atom.Service[List]) listv1.ListManagerServer {
 	return &listV1ManagerServer{
 		proxies: proxies,
 	}
 }
 
 type listV1ManagerServer struct {
-	proxies *atom.Service[ListProxy]
+	proxies *atom.Service[List]
 }
 
 func (s *listV1ManagerServer) Create(ctx context.Context, request *listv1.CreateRequest) (*listv1.CreateResponse, error) {

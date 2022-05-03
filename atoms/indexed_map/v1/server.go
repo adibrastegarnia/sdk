@@ -11,14 +11,14 @@ import (
 	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newIndexedMapV1Server(proxies *atom.Registry[IndexedMapProxy]) indexed_mapv1.IndexedMapServer {
+func newIndexedMapV1Server(proxies *atom.Registry[IndexedMap]) indexed_mapv1.IndexedMapServer {
 	return &indexedMapV1Server{
 		proxies: proxies,
 	}
 }
 
 type indexedMapV1Server struct {
-	proxies *atom.Registry[IndexedMapProxy]
+	proxies *atom.Registry[IndexedMap]
 }
 
 func (s *indexedMapV1Server) Size(ctx context.Context, request *indexed_mapv1.SizeRequest) (*indexed_mapv1.SizeResponse, error) {

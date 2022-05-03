@@ -11,14 +11,14 @@ import (
 	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newListV1Server(proxies *atom.Registry[ListProxy]) listv1.ListServer {
+func newListV1Server(proxies *atom.Registry[List]) listv1.ListServer {
 	return &listV1Server{
 		proxies: proxies,
 	}
 }
 
 type listV1Server struct {
-	proxies *atom.Registry[ListProxy]
+	proxies *atom.Registry[List]
 }
 
 func (s *listV1Server) Size(ctx context.Context, request *listv1.SizeRequest) (*listv1.SizeResponse, error) {

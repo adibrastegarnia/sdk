@@ -12,24 +12,24 @@ import (
 	"google.golang.org/grpc"
 )
 
-var Atom = atom.New[LeaderElectionProxy](clientFactory, func(server *grpc.Server, service *atom.Service[LeaderElectionProxy], registry *atom.Registry[LeaderElectionProxy]) {
+var Atom = atom.New[LeaderElection](clientFactory, func(server *grpc.Server, service *atom.Service[LeaderElection], registry *atom.Registry[LeaderElection]) {
 	electionv1.RegisterLeaderElectionManagerServer(server, newLeaderElectionV1ManagerServer(service))
 	electionv1.RegisterLeaderElectionServer(server, newLeaderElectionV1Server(registry))
 })
 
 // clientFactory is the election/v1 client factory
-var clientFactory = atom.NewClientFactory[LeaderElectionProxy](func(client driver.Client) (*atom.Client[LeaderElectionProxy], bool) {
+var clientFactory = atom.NewClientFactory[LeaderElection](func(client driver.Client) (*atom.Client[LeaderElection], bool) {
 	if electionClient, ok := client.(LeaderElectionClient); ok {
-		return atom.NewClient[LeaderElectionProxy](electionClient.GetLeaderElection), true
+		return atom.NewClient[LeaderElection](electionClient.GetLeaderElection), true
 	}
 	return nil, false
 })
 
 type LeaderElectionClient interface {
-	GetLeaderElection(ctx context.Context, name string) (LeaderElectionProxy, error)
+	GetLeaderElection(ctx context.Context, name string) (LeaderElection, error)
 }
 
-type LeaderElectionProxy interface {
+type LeaderElection interface {
 	atom.Atom
 	electionv1.LeaderElectionServer
 }

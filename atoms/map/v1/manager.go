@@ -11,14 +11,14 @@ import (
 	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newMapV1ManagerServer(proxies *atom.Service[MapProxy]) mapv1.MapManagerServer {
+func newMapV1ManagerServer(proxies *atom.Service[Map]) mapv1.MapManagerServer {
 	return &mapV1ManagerServer{
 		proxies: proxies,
 	}
 }
 
 type mapV1ManagerServer struct {
-	proxies *atom.Service[MapProxy]
+	proxies *atom.Service[Map]
 }
 
 func (s *mapV1ManagerServer) Create(ctx context.Context, request *mapv1.CreateRequest) (*mapv1.CreateResponse, error) {

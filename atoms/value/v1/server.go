@@ -11,14 +11,14 @@ import (
 	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newValueV1Server(proxies *atom.Registry[ValueProxy]) valuev1.ValueServer {
+func newValueV1Server(proxies *atom.Registry[Value]) valuev1.ValueServer {
 	return &valueV1Server{
 		proxies: proxies,
 	}
 }
 
 type valueV1Server struct {
-	proxies *atom.Registry[ValueProxy]
+	proxies *atom.Registry[Value]
 }
 
 func (s *valueV1Server) Set(ctx context.Context, request *valuev1.SetRequest) (*valuev1.SetResponse, error) {

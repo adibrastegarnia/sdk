@@ -12,24 +12,24 @@ import (
 	"google.golang.org/grpc"
 )
 
-var Atom = atom.New[IndexedMapProxy](clientFactory, func(server *grpc.Server, service *atom.Service[IndexedMapProxy], registry *atom.Registry[IndexedMapProxy]) {
+var Atom = atom.New[IndexedMap](clientFactory, func(server *grpc.Server, service *atom.Service[IndexedMap], registry *atom.Registry[IndexedMap]) {
 	indexed_mapv1.RegisterIndexedMapManagerServer(server, newIndexedMapV1ManagerServer(service))
 	indexed_mapv1.RegisterIndexedMapServer(server, newIndexedMapV1Server(registry))
 })
 
-// clientFactory is the counter/v1 client factory
-var clientFactory = atom.NewClientFactory[IndexedMapProxy](func(client driver.Client) (*atom.Client[IndexedMapProxy], bool) {
-	if counterClient, ok := client.(IndexedMapClient); ok {
-		return atom.NewClient[IndexedMapProxy](counterClient.GetIndexedMap), true
+// clientFactory is the indexed_map/v1 client factory
+var clientFactory = atom.NewClientFactory[IndexedMap](func(client driver.Client) (*atom.Client[IndexedMap], bool) {
+	if indexedMapClient, ok := client.(IndexedMapClient); ok {
+		return atom.NewClient[IndexedMap](indexedMapClient.GetIndexedMap), true
 	}
 	return nil, false
 })
 
 type IndexedMapClient interface {
-	GetIndexedMap(ctx context.Context, name string) (IndexedMapProxy, error)
+	GetIndexedMap(ctx context.Context, name string) (IndexedMap, error)
 }
 
-type IndexedMapProxy interface {
+type IndexedMap interface {
 	atom.Atom
 	indexed_mapv1.IndexedMapServer
 }

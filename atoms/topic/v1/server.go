@@ -11,14 +11,14 @@ import (
 	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newTopicV1Server(proxies *atom.Registry[TopicProxy]) topicv1.TopicServer {
+func newTopicV1Server(proxies *atom.Registry[Topic]) topicv1.TopicServer {
 	return &topicV1Server{
 		proxies: proxies,
 	}
 }
 
 type topicV1Server struct {
-	proxies *atom.Registry[TopicProxy]
+	proxies *atom.Registry[Topic]
 }
 
 func (s *topicV1Server) Publish(ctx context.Context, request *topicv1.PublishRequest) (*topicv1.PublishResponse, error) {

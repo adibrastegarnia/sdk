@@ -12,24 +12,24 @@ import (
 	"google.golang.org/grpc"
 )
 
-var Atom = atom.New[SetProxy](clientFactory, func(server *grpc.Server, service *atom.Service[SetProxy], registry *atom.Registry[SetProxy]) {
+var Atom = atom.New[Set](clientFactory, func(server *grpc.Server, service *atom.Service[Set], registry *atom.Registry[Set]) {
 	setv1.RegisterSetManagerServer(server, newSetV1ManagerServer(service))
 	setv1.RegisterSetServer(server, newSetV1Server(registry))
 })
 
-// clientFactory is the counter/v1 client factory
-var clientFactory = atom.NewClientFactory[SetProxy](func(client driver.Client) (*atom.Client[SetProxy], bool) {
-	if counterClient, ok := client.(SetClient); ok {
-		return atom.NewClient[SetProxy](counterClient.GetSet), true
+// clientFactory is the set/v1 client factory
+var clientFactory = atom.NewClientFactory[Set](func(client driver.Client) (*atom.Client[Set], bool) {
+	if setClient, ok := client.(SetClient); ok {
+		return atom.NewClient[Set](setClient.GetSet), true
 	}
 	return nil, false
 })
 
 type SetClient interface {
-	GetSet(ctx context.Context, name string) (SetProxy, error)
+	GetSet(ctx context.Context, name string) (Set, error)
 }
 
-type SetProxy interface {
+type Set interface {
 	atom.Atom
 	setv1.SetServer
 }
