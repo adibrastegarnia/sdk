@@ -8,21 +8,23 @@ import (
 	"context"
 	topicv1 "github.com/atomix/runtime-api/api/atomix/topic/v1"
 	"github.com/atomix/runtime-api/pkg/runtime"
+	"github.com/atomix/runtime-api/pkg/runtime/atom"
 	"github.com/atomix/runtime-api/pkg/runtime/driver"
+	"github.com/atomix/runtime-api/pkg/runtime/proxy"
 	"google.golang.org/grpc"
 )
 
 // Register registers the primitive with the given runtime
 func Register(server *grpc.Server, rt *runtime.Runtime) {
-	proxies := runtime.NewProxyRegistry[TopicProxy]()
-	topicv1.RegisterTopicManagerServer(server, newTopicV1ManagerServer(runtime.NewProxyService[TopicProxy](rt, PrimitiveType, proxies)))
+	proxies := proxy.NewRegistry[TopicProxy]()
+	topicv1.RegisterTopicManagerServer(server, newTopicV1ManagerServer(proxy.NewService[TopicProxy](rt, PrimitiveType, proxies)))
 	topicv1.RegisterTopicServer(server, newTopicV1Server(proxies))
 }
 
 // PrimitiveType is the topic/v1 primitive type
-var PrimitiveType = runtime.NewAtomType[TopicProxy](func(client driver.Client) (*runtime.AtomClient[TopicProxy], bool) {
+var PrimitiveType = atom.NewType[TopicProxy](func(client driver.Client) (*atom.Client[TopicProxy], bool) {
 	if topicClient, ok := client.(TopicClient); ok {
-		return runtime.NewAtomClient[TopicProxy](topicClient.GetTopic), true
+		return atom.NewClient[TopicProxy](topicClient.GetTopic), true
 	}
 	return nil, false
 })
@@ -32,6 +34,6 @@ type TopicClient interface {
 }
 
 type TopicProxy interface {
-	runtime.Atom
+	atom.Atom
 	topicv1.TopicServer
 }

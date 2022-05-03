@@ -8,17 +8,17 @@ import (
 	"context"
 	mapv1 "github.com/atomix/runtime-api/api/atomix/map/v1"
 	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime"
+	"github.com/atomix/runtime-api/pkg/runtime/proxy"
 )
 
-func newMapV1ManagerServer(proxies *runtime.ProxyService[MapProxy]) mapv1.MapManagerServer {
+func newMapV1ManagerServer(proxies *proxy.Service[MapProxy]) mapv1.MapManagerServer {
 	return &mapV1ManagerServer{
 		proxies: proxies,
 	}
 }
 
 type mapV1ManagerServer struct {
-	proxies *runtime.ProxyService[MapProxy]
+	proxies *proxy.Service[MapProxy]
 }
 
 func (s *mapV1ManagerServer) Create(ctx context.Context, request *mapv1.CreateRequest) (*mapv1.CreateResponse, error) {

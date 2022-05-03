@@ -8,17 +8,17 @@ import (
 	"context"
 	listv1 "github.com/atomix/runtime-api/api/atomix/list/v1"
 	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime"
+	"github.com/atomix/runtime-api/pkg/runtime/proxy"
 )
 
-func newListV1ManagerServer(proxies *runtime.ProxyService[ListProxy]) listv1.ListManagerServer {
+func newListV1ManagerServer(proxies *proxy.Service[ListProxy]) listv1.ListManagerServer {
 	return &listV1ManagerServer{
 		proxies: proxies,
 	}
 }
 
 type listV1ManagerServer struct {
-	proxies *runtime.ProxyService[ListProxy]
+	proxies *proxy.Service[ListProxy]
 }
 
 func (s *listV1ManagerServer) Create(ctx context.Context, request *listv1.CreateRequest) (*listv1.CreateResponse, error) {

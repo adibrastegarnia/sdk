@@ -8,17 +8,17 @@ import (
 	"context"
 	lockv1 "github.com/atomix/runtime-api/api/atomix/lock/v1"
 	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime"
+	"github.com/atomix/runtime-api/pkg/runtime/proxy"
 )
 
-func newLockV1ManagerServer(proxies *runtime.ProxyService[LockProxy]) lockv1.LockManagerServer {
+func newLockV1ManagerServer(proxies *proxy.Service[LockProxy]) lockv1.LockManagerServer {
 	return &lockV1ManagerServer{
 		proxies: proxies,
 	}
 }
 
 type lockV1ManagerServer struct {
-	proxies *runtime.ProxyService[LockProxy]
+	proxies *proxy.Service[LockProxy]
 }
 
 func (s *lockV1ManagerServer) Create(ctx context.Context, request *lockv1.CreateRequest) (*lockv1.CreateResponse, error) {

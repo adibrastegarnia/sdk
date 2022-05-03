@@ -8,21 +8,23 @@ import (
 	"context"
 	setv1 "github.com/atomix/runtime-api/api/atomix/set/v1"
 	"github.com/atomix/runtime-api/pkg/runtime"
+	"github.com/atomix/runtime-api/pkg/runtime/atom"
 	"github.com/atomix/runtime-api/pkg/runtime/driver"
+	"github.com/atomix/runtime-api/pkg/runtime/proxy"
 	"google.golang.org/grpc"
 )
 
 // Register registers the primitive with the given runtime
 func Register(server *grpc.Server, rt *runtime.Runtime) {
-	proxies := runtime.NewProxyRegistry[SetProxy]()
-	setv1.RegisterSetManagerServer(server, newSetV1ManagerServer(runtime.NewProxyService[SetProxy](rt, PrimitiveType, proxies)))
+	proxies := proxy.NewRegistry[SetProxy]()
+	setv1.RegisterSetManagerServer(server, newSetV1ManagerServer(proxy.NewService[SetProxy](rt, PrimitiveType, proxies)))
 	setv1.RegisterSetServer(server, newSetV1Server(proxies))
 }
 
 // PrimitiveType is the set/v1 primitive type
-var PrimitiveType = runtime.NewAtomType[SetProxy](func(client driver.Client) (*runtime.AtomClient[SetProxy], bool) {
+var PrimitiveType = atom.NewType[SetProxy](func(client driver.Client) (*atom.Client[SetProxy], bool) {
 	if setClient, ok := client.(SetClient); ok {
-		return runtime.NewAtomClient[SetProxy](setClient.GetSet), true
+		return atom.NewClient[SetProxy](setClient.GetSet), true
 	}
 	return nil, false
 })
@@ -32,6 +34,6 @@ type SetClient interface {
 }
 
 type SetProxy interface {
-	runtime.Atom
+	atom.Atom
 	setv1.SetServer
 }

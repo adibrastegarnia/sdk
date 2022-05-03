@@ -8,17 +8,17 @@ import (
 	"context"
 	electionv1 "github.com/atomix/runtime-api/api/atomix/election/v1"
 	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime"
+	"github.com/atomix/runtime-api/pkg/runtime/proxy"
 )
 
-func newLeaderElectionV1Server(proxies *runtime.ProxyRegistry[LeaderElectionProxy]) electionv1.LeaderElectionServer {
+func newLeaderElectionV1Server(proxies *proxy.Registry[LeaderElectionProxy]) electionv1.LeaderElectionServer {
 	return &leaderElectionV1Server{
 		proxies: proxies,
 	}
 }
 
 type leaderElectionV1Server struct {
-	proxies *runtime.ProxyRegistry[LeaderElectionProxy]
+	proxies *proxy.Registry[LeaderElectionProxy]
 }
 
 func (s *leaderElectionV1Server) Enter(ctx context.Context, request *electionv1.EnterRequest) (*electionv1.EnterResponse, error) {
