@@ -7,19 +7,11 @@ go_import_paths="${go_import_paths},Mgoogle/protobuf/any.proto=github.com/gogo/p
 go_import_paths="${go_import_paths},Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types"
 go_import_paths="${go_import_paths},Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types"
 go_import_paths="${go_import_paths},Mgoogle/protobuf/descriptor.proto=github.com/golang/protobuf/protoc-gen-go/descriptor"
-go_import_paths="${go_import_paths},Matomix/controller/v1/controller.proto=github.com/atomix/runtime-api/api/atomix/controller/v1"
-go_import_paths="${go_import_paths},Matomix/runtime/v1/runtime.proto=github.com/atomix/runtime-api/api/atomix/runtime/v1"
 go_import_paths="${go_import_paths},Matomix/atom/v1/descriptor.proto=github.com/atomix/runtime-api/api/atomix/atom/v1"
 go_import_paths="${go_import_paths},Matomix/atom/v1/atom.proto=github.com/atomix/runtime-api/api/atomix/atom/v1"
 go_import_paths="${go_import_paths},Matomix/atom/meta/v1/headers.proto=github.com/atomix/runtime-api/api/atomix/atom/meta/v1"
 go_import_paths="${go_import_paths},Matomix/atom/meta/v1/object.proto=github.com/atomix/runtime-api/api/atomix/atom/meta/v1"
 go_import_paths="${go_import_paths},Matomix/atom/meta/v1/timestamp.proto=github.com/atomix/runtime-api/api/atomix/atom/meta/v1"
-
-protoc -I=$proto_path \
-  --doc_out=api/atomix/runtime/v1 \
-  --doc_opt=markdown,controller.md \
-  --gogofaster_out=$go_import_paths,import_path=github.com/atomix/runtime-api/api/atomix/runtime/v1,plugins=grpc:api \
-  api/atomix/runtime/v1/controller.proto
 
 protoc -I=$proto_path \
   --doc_out=api/atomix/atom/v1 \

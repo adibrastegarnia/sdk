@@ -5,7 +5,7 @@
 .PHONY: build api
 
 build:
-	goreleaser release --snapshot --rm-dist
+	go build ./...
 
 release:
 	goreleaser release
@@ -14,7 +14,7 @@ api: build
 	@cd api && (rm -r **/*.pb.go **/*.md || true) && cd ..
 	docker run -it -v `pwd`:/build \
 		--entrypoint build/bin/compile-protos.sh \
-		atomix/proto-build:latest
+		`docker build -f build/docker/proto-build.Dockerfile -q .`
 
 reuse-tool: # @HELP install reuse if not present
 	command -v reuse || python3 -m pip install reuse
