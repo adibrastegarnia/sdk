@@ -19,7 +19,7 @@ func Register(server *grpc.Server, rt runtime.Runtime) {
 }
 
 // PrimitiveType is the counter/v1 primitive type
-var PrimitiveType = runtime.NewAtomType[CounterProxy](func(client runtime.Client) (runtime.AtomClient[CounterProxy], bool) {
+var PrimitiveType = runtime.NewAtomType[CounterProxy](func(client runtime.Client) (*runtime.AtomClient[CounterProxy], bool) {
 	if counterClient, ok := client.(CounterClient); ok {
 		return runtime.NewAtomClient[CounterProxy](counterClient.GetCounter), true
 	}

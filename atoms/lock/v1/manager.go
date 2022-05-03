@@ -11,14 +11,14 @@ import (
 	"github.com/atomix/runtime-api/pkg/runtime"
 )
 
-func newLockV1ManagerServer(proxies runtime.ProxyService) lockv1.LockManagerServer {
+func newLockV1ManagerServer(proxies *runtime.ProxyService[LockProxy]) lockv1.LockManagerServer {
 	return &lockV1ManagerServer{
 		proxies: proxies,
 	}
 }
 
 type lockV1ManagerServer struct {
-	proxies runtime.ProxyService
+	proxies *runtime.ProxyService[LockProxy]
 }
 
 func (s *lockV1ManagerServer) Create(ctx context.Context, request *lockv1.CreateRequest) (*lockv1.CreateResponse, error) {

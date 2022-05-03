@@ -11,14 +11,14 @@ import (
 	"github.com/atomix/runtime-api/pkg/runtime"
 )
 
-func newTopicV1ManagerServer(proxies runtime.ProxyService) topicv1.TopicManagerServer {
+func newTopicV1ManagerServer(proxies *runtime.ProxyService[TopicProxy]) topicv1.TopicManagerServer {
 	return &topicV1ManagerServer{
 		proxies: proxies,
 	}
 }
 
 type topicV1ManagerServer struct {
-	proxies runtime.ProxyService
+	proxies *runtime.ProxyService[TopicProxy]
 }
 
 func (s *topicV1ManagerServer) Create(ctx context.Context, request *topicv1.CreateRequest) (*topicv1.CreateResponse, error) {

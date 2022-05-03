@@ -14,24 +14,19 @@ type Proxy interface {
 	Closer
 }
 
-type ProxyNamespace interface {
-	CreateProxy(ctx context.Context, name string) error
-	CloseProxy(ctx context.Context, name string) error
-}
-
-func newProxyNamespace[P Proxy](proxies *ProxyRegistry[P], client AtomClient[P]) ProxyNamespace {
-	return &proxyNamespace[P]{
+func newProxyCluster[P Proxy](proxies *ProxyRegistry[P], client *AtomClient[P]) *ProxyCluster[P] {
+	return &ProxyCluster[P]{
 		proxies: proxies,
 		client:  client,
 	}
 }
 
-type proxyNamespace[P Proxy] struct {
+type ProxyCluster[P Proxy] struct {
 	proxies *ProxyRegistry[P]
-	client  AtomClient[P]
+	client  *AtomClient[P]
 }
 
-func (n *proxyNamespace[P]) CreateProxy(ctx context.Context, name string) error {
+func (n *ProxyCluster[P]) CreateProxy(ctx context.Context, name string) error {
 	proxy, err := n.client.GetProxy(ctx, name)
 	if err != nil {
 		return err
@@ -40,7 +35,7 @@ func (n *proxyNamespace[P]) CreateProxy(ctx context.Context, name string) error 
 	return nil
 }
 
-func (n *proxyNamespace[P]) CloseProxy(ctx context.Context, name string) error {
+func (n *ProxyCluster[P]) CloseProxy(ctx context.Context, name string) error {
 	proxy, ok := n.proxies.unregister(name)
 	if !ok {
 		return errors.NewForbidden("proxy '%s' not found", name)
@@ -48,30 +43,24 @@ func (n *proxyNamespace[P]) CloseProxy(ctx context.Context, name string) error {
 	return proxy.Close(ctx)
 }
 
-var _ ProxyNamespace = (*proxyNamespace[Proxy])(nil)
-
-type ProxyService interface {
-	GetNamespace(ctx context.Context, name string) (ProxyNamespace, error)
-}
-
-func NewProxyService[P Proxy](runtime Runtime, primitiveType AtomType[P], proxies *ProxyRegistry[P]) ProxyService {
-	return &proxyService[P]{
+func NewProxyService[P Proxy](runtime Runtime, primitiveType *AtomType[P], proxies *ProxyRegistry[P]) *ProxyService[P] {
+	return &ProxyService[P]{
 		runtime:       runtime,
 		primitiveType: primitiveType,
 		proxies:       proxies,
-		namespaces:    make(map[string]ProxyNamespace),
+		clusters:      make(map[string]*ProxyCluster[P]),
 	}
 }
 
-type proxyService[P Proxy] struct {
+type ProxyService[P Proxy] struct {
 	runtime       Runtime
-	primitiveType AtomType[P]
+	primitiveType *AtomType[P]
 	proxies       *ProxyRegistry[P]
-	namespaces    map[string]ProxyNamespace
+	clusters      map[string]*ProxyCluster[P]
 	mu            sync.RWMutex
 }
 
-func (m *proxyService[P]) GetNamespace(ctx context.Context, name string) (ProxyNamespace, error) {
+func (m *ProxyService[P]) GetNamespace(ctx context.Context, name string) (*ProxyCluster[P], error) {
 	namespace, ok := m.getNamespace(name)
 	if ok {
 		return namespace, nil
@@ -79,18 +68,18 @@ func (m *proxyService[P]) GetNamespace(ctx context.Context, name string) (ProxyN
 	return m.newNamespace(ctx, name)
 }
 
-func (m *proxyService[P]) getNamespace(name string) (ProxyNamespace, bool) {
+func (m *ProxyService[P]) getNamespace(name string) (*ProxyCluster[P], bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	namespace, ok := m.namespaces[name]
+	namespace, ok := m.clusters[name]
 	return namespace, ok
 }
 
-func (m *proxyService[P]) newNamespace(ctx context.Context, name string) (ProxyNamespace, error) {
+func (m *ProxyService[P]) newNamespace(ctx context.Context, name string) (*ProxyCluster[P], error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	namespace, ok := m.namespaces[name]
+	namespace, ok := m.clusters[name]
 	if ok {
 		return namespace, nil
 	}
@@ -105,12 +94,10 @@ func (m *proxyService[P]) newNamespace(ctx context.Context, name string) (ProxyN
 		return nil, errors.NewNotSupported("primitive type not supported by client for store '%s'", namespace)
 	}
 
-	namespace = newProxyNamespace(m.proxies, client)
-	m.namespaces[name] = namespace
+	namespace = newProxyCluster(m.proxies, client)
+	m.clusters[name] = namespace
 	return namespace, nil
 }
-
-var _ ProxyService = (*proxyService[Proxy])(nil)
 
 func NewProxyRegistry[P Proxy]() *ProxyRegistry[P] {
 	return &ProxyRegistry[P]{

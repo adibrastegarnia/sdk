@@ -19,7 +19,7 @@ func Register(server *grpc.Server, rt runtime.Runtime) {
 }
 
 // PrimitiveType is the lock/v1 primitive type
-var PrimitiveType = runtime.NewAtomType[LockProxy](func(client runtime.Client) (runtime.AtomClient[LockProxy], bool) {
+var PrimitiveType = runtime.NewAtomType[LockProxy](func(client runtime.Client) (*runtime.AtomClient[LockProxy], bool) {
 	if lockClient, ok := client.(LockClient); ok {
 		return runtime.NewAtomClient[LockProxy](lockClient.GetLock), true
 	}

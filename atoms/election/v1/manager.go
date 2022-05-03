@@ -11,14 +11,14 @@ import (
 	"github.com/atomix/runtime-api/pkg/runtime"
 )
 
-func newLeaderElectionV1ManagerServer(proxies runtime.ProxyService) electionv1.LeaderElectionManagerServer {
+func newLeaderElectionV1ManagerServer(proxies *runtime.ProxyService[LeaderElectionProxy]) electionv1.LeaderElectionManagerServer {
 	return &leaderElectionV1ManagerServer{
 		proxies: proxies,
 	}
 }
 
 type leaderElectionV1ManagerServer struct {
-	proxies runtime.ProxyService
+	proxies *runtime.ProxyService[LeaderElectionProxy]
 }
 
 func (s *leaderElectionV1ManagerServer) Create(ctx context.Context, request *electionv1.CreateRequest) (*electionv1.CreateResponse, error) {
