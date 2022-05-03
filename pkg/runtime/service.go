@@ -10,18 +10,18 @@ import (
 	"net"
 )
 
-func NewService(runtime *Runtime, opts ...Option) *Service {
-	var options Options
+func NewService(runtime *Runtime, opts ...ServiceOption) *Service {
+	var options ServiceOptions
 	options.apply(opts...)
 	return &Service{
-		Options: options,
-		runtime: runtime,
-		server:  grpc.NewServer(),
+		ServiceOptions: options,
+		runtime:        runtime,
+		server:         grpc.NewServer(),
 	}
 }
 
 type Service struct {
-	Options
+	ServiceOptions
 	runtime *Runtime
 	server  *grpc.Server
 }

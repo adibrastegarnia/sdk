@@ -11,13 +11,9 @@ import (
 )
 
 type Options struct {
-	Server     ServerOptions            `yaml:"server"`
 	Controller controller.Options       `yaml:"controller"`
 	Repository driver.RepositoryOptions `yaml:"repository"`
-	Atoms      []AtomFunc
 }
-
-type AtomFunc func(*grpc.Server, *Runtime)
 
 func (o Options) apply(opts ...Option) {
 	for _, opt := range opts {
@@ -26,6 +22,21 @@ func (o Options) apply(opts ...Option) {
 }
 
 type Option func(*Options)
+
+type ServiceOptions struct {
+	Server ServerOptions `yaml:"server"`
+	Atoms  []AtomFunc
+}
+
+func (o ServiceOptions) apply(opts ...ServiceOption) {
+	for _, opt := range opts {
+		opt(&o)
+	}
+}
+
+type ServiceOption func(*ServiceOptions)
+
+type AtomFunc func(*grpc.Server, *Runtime)
 
 type ServerOptions struct {
 	Host string `yaml:"host"`
@@ -38,26 +49,32 @@ func WithOptions(opts Options) Option {
 	}
 }
 
-func WithHost(host string) Option {
-	return func(options *Options) {
+func WithServiceOptions(opts ServiceOptions) ServiceOption {
+	return func(options *ServiceOptions) {
+		*options = opts
+	}
+}
+
+func WithHost(host string) ServiceOption {
+	return func(options *ServiceOptions) {
 		options.Server.Host = host
 	}
 }
 
-func WithPort(port int) Option {
-	return func(options *Options) {
+func WithPort(port int) ServiceOption {
+	return func(options *ServiceOptions) {
 		options.Server.Port = port
 	}
 }
 
-func WithAtom(atom AtomFunc) Option {
-	return func(options *Options) {
+func WithAtom(atom AtomFunc) ServiceOption {
+	return func(options *ServiceOptions) {
 		options.Atoms = append(options.Atoms, atom)
 	}
 }
 
-func WithAtoms(atom ...AtomFunc) Option {
-	return func(options *Options) {
+func WithAtoms(atom ...AtomFunc) ServiceOption {
+	return func(options *ServiceOptions) {
 		options.Atoms = append(options.Atoms, atom...)
 	}
 }
