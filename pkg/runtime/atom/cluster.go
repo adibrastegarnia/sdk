@@ -2,28 +2,27 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package proxy
+package atom
 
 import (
 	"context"
 	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newCluster[T atom.Atom](proxies *Registry[T], client *atom.Client[T]) *Cluster[T] {
+func newCluster[T Atom](proxies *Registry[T], client *Client[T]) *Cluster[T] {
 	return &Cluster[T]{
 		proxies: proxies,
 		client:  client,
 	}
 }
 
-type Cluster[T atom.Atom] struct {
+type Cluster[T Atom] struct {
 	proxies *Registry[T]
-	client  *atom.Client[T]
+	client  *Client[T]
 }
 
 func (n *Cluster[T]) CreateProxy(ctx context.Context, name string) error {
-	proxy, err := n.client.GetProxy(ctx, name)
+	proxy, err := n.client.GetAtom(ctx, name)
 	if err != nil {
 		return err
 	}

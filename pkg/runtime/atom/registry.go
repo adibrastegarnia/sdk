@@ -2,20 +2,19 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package proxy
+package atom
 
 import (
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
 	"sync"
 )
 
-func NewRegistry[T atom.Atom]() *Registry[T] {
+func NewRegistry[T Atom]() *Registry[T] {
 	return &Registry[T]{
 		proxies: make(map[string]T),
 	}
 }
 
-type Registry[T atom.Atom] struct {
+type Registry[T Atom] struct {
 	proxies map[string]T
 	mu      sync.RWMutex
 }

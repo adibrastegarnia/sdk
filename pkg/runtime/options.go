@@ -5,6 +5,7 @@
 package runtime
 
 import (
+	"github.com/atomix/runtime-api/pkg/runtime/atom"
 	"github.com/atomix/runtime-api/pkg/runtime/controller"
 	"github.com/atomix/runtime-api/pkg/runtime/driver"
 	"google.golang.org/grpc"
@@ -67,15 +68,11 @@ func WithPort(port int) ServiceOption {
 	}
 }
 
-func WithAtom(atom AtomFunc) ServiceOption {
+func WithAtom[T atom.Atom](atom *atom.Type[T]) ServiceOption {
 	return func(options *ServiceOptions) {
-		options.Atoms = append(options.Atoms, atom)
-	}
-}
-
-func WithAtoms(atom ...AtomFunc) ServiceOption {
-	return func(options *ServiceOptions) {
-		options.Atoms = append(options.Atoms, atom...)
+		options.Atoms = append(options.Atoms, func(server *grpc.Server, runtime *Runtime) {
+			atom.Register(server, runtime)
+		})
 	}
 }
 

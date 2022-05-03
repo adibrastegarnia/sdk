@@ -7,24 +7,20 @@ package v1
 import (
 	"context"
 	setv1 "github.com/atomix/runtime-api/api/atomix/set/v1"
-	"github.com/atomix/runtime-api/pkg/runtime"
 	"github.com/atomix/runtime-api/pkg/runtime/atom"
 	"github.com/atomix/runtime-api/pkg/runtime/driver"
-	"github.com/atomix/runtime-api/pkg/runtime/proxy"
 	"google.golang.org/grpc"
 )
 
-// Register registers the primitive with the given runtime
-func Register(server *grpc.Server, rt *runtime.Runtime) {
-	proxies := proxy.NewRegistry[SetProxy]()
-	setv1.RegisterSetManagerServer(server, newSetV1ManagerServer(proxy.NewService[SetProxy](rt, PrimitiveType, proxies)))
-	setv1.RegisterSetServer(server, newSetV1Server(proxies))
-}
+var Atom = atom.New[SetProxy](clientFactory, func(server *grpc.Server, service *atom.Service[SetProxy], registry *atom.Registry[SetProxy]) {
+	setv1.RegisterSetManagerServer(server, newSetV1ManagerServer(service))
+	setv1.RegisterSetServer(server, newSetV1Server(registry))
+})
 
-// PrimitiveType is the set/v1 primitive type
-var PrimitiveType = atom.NewType[SetProxy](func(client driver.Client) (*atom.Client[SetProxy], bool) {
-	if setClient, ok := client.(SetClient); ok {
-		return atom.NewClient[SetProxy](setClient.GetSet), true
+// clientFactory is the counter/v1 client factory
+var clientFactory = atom.NewClientFactory[SetProxy](func(client driver.Client) (*atom.Client[SetProxy], bool) {
+	if counterClient, ok := client.(SetClient); ok {
+		return atom.NewClient[SetProxy](counterClient.GetSet), true
 	}
 	return nil, false
 })

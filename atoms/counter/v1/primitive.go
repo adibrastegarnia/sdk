@@ -8,17 +8,17 @@ import (
 	"context"
 	counterv1 "github.com/atomix/runtime-api/api/atomix/counter/v1"
 	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/proxy"
+	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newCounterV1Server(proxies *proxy.Registry[CounterProxy]) counterv1.CounterServer {
+func newCounterV1Server(proxies *atom.Registry[CounterProxy]) counterv1.CounterServer {
 	return &counterV1Server{
 		proxies: proxies,
 	}
 }
 
 type counterV1Server struct {
-	proxies *proxy.Registry[CounterProxy]
+	proxies *atom.Registry[CounterProxy]
 }
 
 func (s *counterV1Server) Set(ctx context.Context, request *counterv1.SetRequest) (*counterv1.SetResponse, error) {

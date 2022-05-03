@@ -2,32 +2,31 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package proxy
+package atom
 
 import (
 	"context"
 	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
 	"github.com/atomix/runtime-api/pkg/runtime/driver"
 	"sync"
 )
 
-type Client interface {
+type Connector interface {
 	Connect(ctx context.Context, name string) (driver.Conn, error)
 }
 
-func NewService[T atom.Atom](client Client, primitiveType *atom.Type[T], proxies *Registry[T]) *Service[T] {
+func NewService[T Atom](connector Connector, clientFactory *ClientFactory[T], proxies *Registry[T]) *Service[T] {
 	return &Service[T]{
-		client:        client,
-		primitiveType: primitiveType,
+		connector:     connector,
+		clientFactory: clientFactory,
 		proxies:       proxies,
 		clusters:      make(map[string]*Cluster[T]),
 	}
 }
 
-type Service[T atom.Atom] struct {
-	client        Client
-	primitiveType *atom.Type[T]
+type Service[T Atom] struct {
+	connector     Connector
+	clientFactory *ClientFactory[T]
 	proxies       *Registry[T]
 	clusters      map[string]*Cluster[T]
 	mu            sync.RWMutex
@@ -52,22 +51,22 @@ func (m *Service[T]) newCluster(ctx context.Context, name string) (*Cluster[T], 
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	namespace, ok := m.clusters[name]
+	cluster, ok := m.clusters[name]
 	if ok {
-		return namespace, nil
+		return cluster, nil
 	}
 
-	conn, err := m.client.Connect(ctx, name)
+	conn, err := m.connector.Connect(ctx, name)
 	if err != nil {
 		return nil, err
 	}
 
-	client, ok := m.primitiveType.Client(conn.Client())
+	client, ok := m.clientFactory.GetClient(conn.Client())
 	if !ok {
-		return nil, errors.NewNotSupported("primitive type not supported by client for store '%s'", namespace)
+		return nil, errors.NewNotSupported("primitive type not supported by client for cluster '%s'", cluster)
 	}
 
-	namespace = newCluster(m.proxies, client)
-	m.clusters[name] = namespace
-	return namespace, nil
+	cluster = newCluster(m.proxies, client)
+	m.clusters[name] = cluster
+	return cluster, nil
 }

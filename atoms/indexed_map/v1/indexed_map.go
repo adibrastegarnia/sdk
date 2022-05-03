@@ -7,24 +7,20 @@ package v1
 import (
 	"context"
 	indexed_mapv1 "github.com/atomix/runtime-api/api/atomix/indexed_map/v1"
-	"github.com/atomix/runtime-api/pkg/runtime"
 	"github.com/atomix/runtime-api/pkg/runtime/atom"
 	"github.com/atomix/runtime-api/pkg/runtime/driver"
-	"github.com/atomix/runtime-api/pkg/runtime/proxy"
 	"google.golang.org/grpc"
 )
 
-// Register registers the primitive with the given runtime
-func Register(server *grpc.Server, rt *runtime.Runtime) {
-	proxies := proxy.NewRegistry[IndexedMapProxy]()
-	indexed_mapv1.RegisterIndexedMapManagerServer(server, newIndexedMapV1ManagerServer(proxy.NewService[IndexedMapProxy](rt, PrimitiveType, proxies)))
-	indexed_mapv1.RegisterIndexedMapServer(server, newIndexedMapV1Server(proxies))
-}
+var Atom = atom.New[IndexedMapProxy](clientFactory, func(server *grpc.Server, service *atom.Service[IndexedMapProxy], registry *atom.Registry[IndexedMapProxy]) {
+	indexed_mapv1.RegisterIndexedMapManagerServer(server, newIndexedMapV1ManagerServer(service))
+	indexed_mapv1.RegisterIndexedMapServer(server, newIndexedMapV1Server(registry))
+})
 
-// PrimitiveType is the indexed_map/v1 primitive type
-var PrimitiveType = atom.NewType[IndexedMapProxy](func(client driver.Client) (*atom.Client[IndexedMapProxy], bool) {
-	if indexed_mapClient, ok := client.(IndexedMapClient); ok {
-		return atom.NewClient[IndexedMapProxy](indexed_mapClient.GetIndexedMap), true
+// clientFactory is the counter/v1 client factory
+var clientFactory = atom.NewClientFactory[IndexedMapProxy](func(client driver.Client) (*atom.Client[IndexedMapProxy], bool) {
+	if counterClient, ok := client.(IndexedMapClient); ok {
+		return atom.NewClient[IndexedMapProxy](counterClient.GetIndexedMap), true
 	}
 	return nil, false
 })

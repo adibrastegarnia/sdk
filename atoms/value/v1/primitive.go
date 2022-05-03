@@ -8,17 +8,17 @@ import (
 	"context"
 	valuev1 "github.com/atomix/runtime-api/api/atomix/value/v1"
 	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/proxy"
+	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newValueV1Server(proxies *proxy.Registry[ValueProxy]) valuev1.ValueServer {
+func newValueV1Server(proxies *atom.Registry[ValueProxy]) valuev1.ValueServer {
 	return &valueV1Server{
 		proxies: proxies,
 	}
 }
 
 type valueV1Server struct {
-	proxies *proxy.Registry[ValueProxy]
+	proxies *atom.Registry[ValueProxy]
 }
 
 func (s *valueV1Server) Set(ctx context.Context, request *valuev1.SetRequest) (*valuev1.SetResponse, error) {

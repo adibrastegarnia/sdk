@@ -7,24 +7,20 @@ package v1
 import (
 	"context"
 	mapv1 "github.com/atomix/runtime-api/api/atomix/map/v1"
-	"github.com/atomix/runtime-api/pkg/runtime"
 	"github.com/atomix/runtime-api/pkg/runtime/atom"
 	"github.com/atomix/runtime-api/pkg/runtime/driver"
-	"github.com/atomix/runtime-api/pkg/runtime/proxy"
 	"google.golang.org/grpc"
 )
 
-// Register registers the primitive with the given runtime
-func Register(server *grpc.Server, rt *runtime.Runtime) {
-	proxies := proxy.NewRegistry[MapProxy]()
-	mapv1.RegisterMapManagerServer(server, newMapV1ManagerServer(proxy.NewService[MapProxy](rt, PrimitiveType, proxies)))
-	mapv1.RegisterMapServer(server, newMapV1Server(proxies))
-}
+var Atom = atom.New[MapProxy](clientFactory, func(server *grpc.Server, service *atom.Service[MapProxy], registry *atom.Registry[MapProxy]) {
+	mapv1.RegisterMapManagerServer(server, newMapV1ManagerServer(service))
+	mapv1.RegisterMapServer(server, newMapV1Server(registry))
+})
 
-// PrimitiveType is the map/v1 primitive type
-var PrimitiveType = atom.NewType[MapProxy](func(client driver.Client) (*atom.Client[MapProxy], bool) {
-	if mapClient, ok := client.(MapClient); ok {
-		return atom.NewClient[MapProxy](mapClient.GetMap), true
+// clientFactory is the counter/v1 client factory
+var clientFactory = atom.NewClientFactory[MapProxy](func(client driver.Client) (*atom.Client[MapProxy], bool) {
+	if counterClient, ok := client.(MapClient); ok {
+		return atom.NewClient[MapProxy](counterClient.GetMap), true
 	}
 	return nil, false
 })

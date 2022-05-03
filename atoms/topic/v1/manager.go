@@ -8,17 +8,17 @@ import (
 	"context"
 	topicv1 "github.com/atomix/runtime-api/api/atomix/topic/v1"
 	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/proxy"
+	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newTopicV1ManagerServer(proxies *proxy.Service[TopicProxy]) topicv1.TopicManagerServer {
+func newTopicV1ManagerServer(proxies *atom.Service[TopicProxy]) topicv1.TopicManagerServer {
 	return &topicV1ManagerServer{
 		proxies: proxies,
 	}
 }
 
 type topicV1ManagerServer struct {
-	proxies *proxy.Service[TopicProxy]
+	proxies *atom.Service[TopicProxy]
 }
 
 func (s *topicV1ManagerServer) Create(ctx context.Context, request *topicv1.CreateRequest) (*topicv1.CreateResponse, error) {

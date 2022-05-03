@@ -8,17 +8,17 @@ import (
 	"context"
 	topicv1 "github.com/atomix/runtime-api/api/atomix/topic/v1"
 	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/proxy"
+	"github.com/atomix/runtime-api/pkg/runtime/atom"
 )
 
-func newTopicV1Server(proxies *proxy.Registry[TopicProxy]) topicv1.TopicServer {
+func newTopicV1Server(proxies *atom.Registry[TopicProxy]) topicv1.TopicServer {
 	return &topicV1Server{
 		proxies: proxies,
 	}
 }
 
 type topicV1Server struct {
-	proxies *proxy.Registry[TopicProxy]
+	proxies *atom.Registry[TopicProxy]
 }
 
 func (s *topicV1Server) Publish(ctx context.Context, request *topicv1.PublishRequest) (*topicv1.PublishResponse, error) {
