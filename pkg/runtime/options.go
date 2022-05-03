@@ -7,18 +7,17 @@ package runtime
 import (
 	"github.com/atomix/runtime-api/pkg/runtime/controller"
 	"github.com/atomix/runtime-api/pkg/runtime/driver"
+	"google.golang.org/grpc"
 )
 
 type Options struct {
-	Server     ServerOptions            `yaml:"server,omitempty"`
-	Controller controller.Options       `yaml:"controller,omitempty"`
-	Repository driver.RepositoryOptions `yaml:"repository,omitempty"`
+	Server     ServerOptions            `yaml:"server"`
+	Controller controller.Options       `yaml:"controller"`
+	Repository driver.RepositoryOptions `yaml:"repository"`
+	Atoms      []AtomFunc
 }
 
-type ServerOptions struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
-}
+type AtomFunc func(*grpc.Server, *Runtime)
 
 func (o Options) apply(opts ...Option) {
 	for _, opt := range opts {
@@ -27,6 +26,17 @@ func (o Options) apply(opts ...Option) {
 }
 
 type Option func(*Options)
+
+type ServerOptions struct {
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
+}
+
+func WithOptions(opts Options) Option {
+	return func(options *Options) {
+		*options = opts
+	}
+}
 
 func WithHost(host string) Option {
 	return func(options *Options) {
@@ -37,6 +47,18 @@ func WithHost(host string) Option {
 func WithPort(port int) Option {
 	return func(options *Options) {
 		options.Server.Port = port
+	}
+}
+
+func WithAtom(atom AtomFunc) Option {
+	return func(options *Options) {
+		options.Atoms = append(options.Atoms, atom)
+	}
+}
+
+func WithAtoms(atom ...AtomFunc) Option {
+	return func(options *Options) {
+		options.Atoms = append(options.Atoms, atom...)
 	}
 }
 
