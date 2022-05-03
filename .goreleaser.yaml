@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2022-present Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+project_name: kubernetes-runtime
+
+builds:
+  - skip: true
+
+dockers:
+  - id: proto-build
+    dockerfile: build/docker/proto-build.Dockerfile
+    image_templates:
+      - atomix/proto-build:latest
+      - atomix/proto-build:{{ .Tag }}
+      - atomix/proto-build:v{{ .Major }}.{{ .Minor }}
