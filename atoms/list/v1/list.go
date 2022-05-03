@@ -19,9 +19,9 @@ func Register(server *grpc.Server, rt runtime.Runtime) {
 }
 
 // PrimitiveType is the list/v1 primitive type
-var PrimitiveType = runtime.NewPrimitiveType[ListProxy](func(client runtime.Client) (runtime.PrimitiveClient[ListProxy], bool) {
+var PrimitiveType = runtime.NewAtomType[ListProxy](func(client runtime.Client) (runtime.AtomClient[ListProxy], bool) {
 	if listClient, ok := client.(ListClient); ok {
-		return runtime.NewPrimitiveClient[ListProxy](listClient.GetList), true
+		return runtime.NewAtomClient[ListProxy](listClient.GetList), true
 	}
 	return nil, false
 })

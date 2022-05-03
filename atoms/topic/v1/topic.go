@@ -19,9 +19,9 @@ func Register(server *grpc.Server, rt runtime.Runtime) {
 }
 
 // PrimitiveType is the topic/v1 primitive type
-var PrimitiveType = runtime.NewPrimitiveType[TopicProxy](func(client runtime.Client) (runtime.PrimitiveClient[TopicProxy], bool) {
+var PrimitiveType = runtime.NewAtomType[TopicProxy](func(client runtime.Client) (runtime.AtomClient[TopicProxy], bool) {
 	if topicClient, ok := client.(TopicClient); ok {
-		return runtime.NewPrimitiveClient[TopicProxy](topicClient.GetTopic), true
+		return runtime.NewAtomClient[TopicProxy](topicClient.GetTopic), true
 	}
 	return nil, false
 })

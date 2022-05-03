@@ -19,7 +19,7 @@ type ProxyNamespace interface {
 	CloseProxy(ctx context.Context, name string) error
 }
 
-func newProxyNamespace[P Proxy](proxies *ProxyRegistry[P], client PrimitiveClient[P]) ProxyNamespace {
+func newProxyNamespace[P Proxy](proxies *ProxyRegistry[P], client AtomClient[P]) ProxyNamespace {
 	return &proxyNamespace[P]{
 		proxies: proxies,
 		client:  client,
@@ -28,7 +28,7 @@ func newProxyNamespace[P Proxy](proxies *ProxyRegistry[P], client PrimitiveClien
 
 type proxyNamespace[P Proxy] struct {
 	proxies *ProxyRegistry[P]
-	client  PrimitiveClient[P]
+	client  AtomClient[P]
 }
 
 func (n *proxyNamespace[P]) CreateProxy(ctx context.Context, name string) error {
@@ -54,7 +54,7 @@ type ProxyService interface {
 	GetNamespace(ctx context.Context, name string) (ProxyNamespace, error)
 }
 
-func NewProxyService[P Proxy](runtime Runtime, primitiveType PrimitiveType[P], proxies *ProxyRegistry[P]) ProxyService {
+func NewProxyService[P Proxy](runtime Runtime, primitiveType AtomType[P], proxies *ProxyRegistry[P]) ProxyService {
 	return &proxyService[P]{
 		runtime:       runtime,
 		primitiveType: primitiveType,
@@ -65,7 +65,7 @@ func NewProxyService[P Proxy](runtime Runtime, primitiveType PrimitiveType[P], p
 
 type proxyService[P Proxy] struct {
 	runtime       Runtime
-	primitiveType PrimitiveType[P]
+	primitiveType AtomType[P]
 	proxies       *ProxyRegistry[P]
 	namespaces    map[string]ProxyNamespace
 	mu            sync.RWMutex

@@ -19,9 +19,9 @@ func Register(server *grpc.Server, rt runtime.Runtime) {
 }
 
 // PrimitiveType is the set/v1 primitive type
-var PrimitiveType = runtime.NewPrimitiveType[SetProxy](func(client runtime.Client) (runtime.PrimitiveClient[SetProxy], bool) {
+var PrimitiveType = runtime.NewAtomType[SetProxy](func(client runtime.Client) (runtime.AtomClient[SetProxy], bool) {
 	if setClient, ok := client.(SetClient); ok {
-		return runtime.NewPrimitiveClient[SetProxy](setClient.GetSet), true
+		return runtime.NewAtomClient[SetProxy](setClient.GetSet), true
 	}
 	return nil, false
 })

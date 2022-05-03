@@ -19,9 +19,9 @@ func Register(server *grpc.Server, rt runtime.Runtime) {
 }
 
 // PrimitiveType is the value/v1 primitive type
-var PrimitiveType = runtime.NewPrimitiveType[ValueProxy](func(client runtime.Client) (runtime.PrimitiveClient[ValueProxy], bool) {
+var PrimitiveType = runtime.NewAtomType[ValueProxy](func(client runtime.Client) (runtime.AtomClient[ValueProxy], bool) {
 	if valueClient, ok := client.(ValueClient); ok {
-		return runtime.NewPrimitiveClient[ValueProxy](valueClient.GetValue), true
+		return runtime.NewAtomClient[ValueProxy](valueClient.GetValue), true
 	}
 	return nil, false
 })

@@ -19,9 +19,9 @@ func Register(server *grpc.Server, rt runtime.Runtime) {
 }
 
 // PrimitiveType is the indexed_map/v1 primitive type
-var PrimitiveType = runtime.NewPrimitiveType[IndexedMapProxy](func(client runtime.Client) (runtime.PrimitiveClient[IndexedMapProxy], bool) {
+var PrimitiveType = runtime.NewAtomType[IndexedMapProxy](func(client runtime.Client) (runtime.AtomClient[IndexedMapProxy], bool) {
 	if indexed_mapClient, ok := client.(IndexedMapClient); ok {
-		return runtime.NewPrimitiveClient[IndexedMapProxy](indexed_mapClient.GetIndexedMap), true
+		return runtime.NewAtomClient[IndexedMapProxy](indexed_mapClient.GetIndexedMap), true
 	}
 	return nil, false
 })

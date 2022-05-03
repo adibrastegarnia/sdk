@@ -19,9 +19,9 @@ func Register(server *grpc.Server, rt runtime.Runtime) {
 }
 
 // PrimitiveType is the election/v1 primitive type
-var PrimitiveType = runtime.NewPrimitiveType[LeaderElectionProxy](func(client runtime.Client) (runtime.PrimitiveClient[LeaderElectionProxy], bool) {
+var PrimitiveType = runtime.NewAtomType[LeaderElectionProxy](func(client runtime.Client) (runtime.AtomClient[LeaderElectionProxy], bool) {
 	if electionClient, ok := client.(LeaderElectionClient); ok {
-		return runtime.NewPrimitiveClient[LeaderElectionProxy](electionClient.GetLeaderElection), true
+		return runtime.NewAtomClient[LeaderElectionProxy](electionClient.GetLeaderElection), true
 	}
 	return nil, false
 })

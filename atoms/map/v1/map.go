@@ -19,9 +19,9 @@ func Register(server *grpc.Server, rt runtime.Runtime) {
 }
 
 // PrimitiveType is the map/v1 primitive type
-var PrimitiveType = runtime.NewPrimitiveType[MapProxy](func(client runtime.Client) (runtime.PrimitiveClient[MapProxy], bool) {
+var PrimitiveType = runtime.NewAtomType[MapProxy](func(client runtime.Client) (runtime.AtomClient[MapProxy], bool) {
 	if mapClient, ok := client.(MapClient); ok {
-		return runtime.NewPrimitiveClient[MapProxy](mapClient.GetMap), true
+		return runtime.NewAtomClient[MapProxy](mapClient.GetMap), true
 	}
 	return nil, false
 })
