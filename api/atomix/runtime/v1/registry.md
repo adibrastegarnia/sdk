@@ -5,6 +5,9 @@
 
 - [atomix/runtime/v1/registry.proto](#atomix_runtime_v1_registry-proto)
     - [DriverInfo](#atomix-runtime-v1-DriverInfo)
+    - [PluginChunk](#atomix-runtime-v1-PluginChunk)
+    - [PluginHeader](#atomix-runtime-v1-PluginHeader)
+    - [PluginTrailer](#atomix-runtime-v1-PluginTrailer)
     - [PullDriverRequest](#atomix-runtime-v1-PullDriverRequest)
     - [PullDriverResponse](#atomix-runtime-v1-PullDriverResponse)
     - [PushDriverRequest](#atomix-runtime-v1-PushDriverRequest)
@@ -40,6 +43,52 @@
 
 
 
+<a name="atomix-runtime-v1-PluginChunk"></a>
+
+### PluginChunk
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| data | [bytes](#bytes) |  |  |
+
+
+
+
+
+
+<a name="atomix-runtime-v1-PluginHeader"></a>
+
+### PluginHeader
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| driver | [DriverInfo](#atomix-runtime-v1-DriverInfo) |  |  |
+| runtime | [RuntimeInfo](#atomix-runtime-v1-RuntimeInfo) |  |  |
+
+
+
+
+
+
+<a name="atomix-runtime-v1-PluginTrailer"></a>
+
+### PluginTrailer
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| checksum | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="atomix-runtime-v1-PullDriverRequest"></a>
 
 ### PullDriverRequest
@@ -48,8 +97,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| driver | [DriverInfo](#atomix-runtime-v1-DriverInfo) |  |  |
-| runtime | [RuntimeInfo](#atomix-runtime-v1-RuntimeInfo) |  |  |
+| header | [PluginHeader](#atomix-runtime-v1-PluginHeader) |  |  |
 
 
 
@@ -64,7 +112,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| data | [bytes](#bytes) |  |  |
+| chunk | [PluginChunk](#atomix-runtime-v1-PluginChunk) |  |  |
+| trailer | [PluginTrailer](#atomix-runtime-v1-PluginTrailer) |  |  |
 
 
 
@@ -79,9 +128,9 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| driver | [DriverInfo](#atomix-runtime-v1-DriverInfo) |  |  |
-| runtime | [RuntimeInfo](#atomix-runtime-v1-RuntimeInfo) |  |  |
-| data | [bytes](#bytes) |  |  |
+| header | [PluginHeader](#atomix-runtime-v1-PluginHeader) |  |  |
+| chunk | [PluginChunk](#atomix-runtime-v1-PluginChunk) |  |  |
+| trailer | [PluginTrailer](#atomix-runtime-v1-PluginTrailer) |  |  |
 
 
 

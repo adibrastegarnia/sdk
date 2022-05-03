@@ -39,7 +39,7 @@ func (r *Registry) Open(name, version, apiVersion string) (io.ReadCloser, error)
 func (r *Registry) get(name, version, apiVersion string) *Plugin {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	path := filepath.Join(r.Path, getPluginFile(name, version, apiVersion))
+	path := filepath.Join(r.Path, getPluginFilename(name, version, apiVersion))
 	plugin, ok := r.plugins[path]
 	if !ok {
 		plugin = &Plugin{
@@ -47,6 +47,7 @@ func (r *Registry) get(name, version, apiVersion string) *Plugin {
 			Name:       name,
 			Version:    version,
 			APIVersion: apiVersion,
+			Path:       path,
 		}
 	}
 	return plugin

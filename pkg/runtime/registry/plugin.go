@@ -21,6 +21,10 @@ type Plugin struct {
 	mu         sync.RWMutex
 }
 
+func (p *Plugin) filename() string {
+	return getPluginFilename(p.Name, p.Version, p.APIVersion)
+}
+
 func (p *Plugin) Create() (io.WriteCloser, error) {
 	p.mu.Lock()
 	writer, err := os.Create(p.Path)
@@ -51,7 +55,7 @@ func (p *Plugin) Download(owner, repo string) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	url := fmt.Sprintf("https://github.com/%s/%s/releases/download/%s/%s", owner, repo, p.Version, getPluginFile(p.Name, p.Version, p.APIVersion))
+	url := fmt.Sprintf("https://github.com/%s/%s/releases/download/%s/%s", owner, repo, p.Version, p.filename())
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -69,7 +73,13 @@ func (p *Plugin) Download(owner, repo string) error {
 	if err != nil {
 		return err
 	}
-	return nil
+
+	sum := newChecksum(p)
+	return sum.check(fmt.Sprintf("https://github.com/%s/%s/releases/download/%s/checksums.txt", owner, repo, p.Version))
+}
+
+func (p *Plugin) String() string {
+	return p.filename()
 }
 
 type PluginWriter struct {
@@ -100,6 +110,6 @@ func (r *PluginReader) Close() error {
 	return r.reader.Close()
 }
 
-func getPluginFile(name, version, apiVersion string) string {
+func getPluginFilename(name, version, apiVersion string) string {
 	return fmt.Sprintf("%s-%s.%s.so", name, version, apiVersion)
 }

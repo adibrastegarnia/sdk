@@ -25,7 +25,7 @@ message RuntimeInfo {
     string version = 1;
 }
 
-message PullDriverRequest {
+message PluginHeader {
     DriverInfo driver = 1 [
         (gogoproto.nullable) = false
     ];
@@ -34,18 +34,31 @@ message PullDriverRequest {
     ];
 }
 
-message PullDriverResponse {
+message PluginChunk {
     bytes data = 1;
 }
 
+message PluginTrailer {
+    string checksum = 1;
+}
+
+message PullDriverRequest {
+    PluginHeader header = 1;
+}
+
+message PullDriverResponse {
+    oneof response {
+        PluginChunk chunk = 1;
+        PluginTrailer trailer = 2;
+    }
+}
+
 message PushDriverRequest {
-    DriverInfo driver = 1 [
-        (gogoproto.nullable) = false
-    ];
-    RuntimeInfo runtime = 2 [
-        (gogoproto.nullable) = false
-    ];
-    bytes data = 3;
+    oneof request {
+        PluginHeader header = 1;
+        PluginChunk chunk = 2;
+        PluginTrailer trailer = 3;
+    }
 }
 
 message PushDriverResponse {

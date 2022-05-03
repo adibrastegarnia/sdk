@@ -81,7 +81,12 @@ func (r *Runtime) connect(ctx context.Context, name string) (driver.Conn, error)
 			return nil, context.Canceled
 		}
 
-		driver, err := r.drivers.Load(ctx, cluster.Driver, cluster.Version, version.Version())
+		pluginInfo := driver.PluginInfo{
+			Name:       cluster.Driver,
+			Version:    cluster.Version,
+			APIVersion: version.Version(),
+		}
+		driver, err := r.drivers.Load(ctx, pluginInfo)
 		if err != nil {
 			return nil, err
 		}

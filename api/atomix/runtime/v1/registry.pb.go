@@ -123,16 +123,155 @@ func (m *RuntimeInfo) GetVersion() string {
 	return ""
 }
 
-type PullDriverRequest struct {
+type PluginHeader struct {
 	Driver  DriverInfo  `protobuf:"bytes,1,opt,name=driver,proto3" json:"driver"`
 	Runtime RuntimeInfo `protobuf:"bytes,2,opt,name=runtime,proto3" json:"runtime"`
+}
+
+func (m *PluginHeader) Reset()         { *m = PluginHeader{} }
+func (m *PluginHeader) String() string { return proto.CompactTextString(m) }
+func (*PluginHeader) ProtoMessage()    {}
+func (*PluginHeader) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9263e29e3d7880f3, []int{2}
+}
+func (m *PluginHeader) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *PluginHeader) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_PluginHeader.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *PluginHeader) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PluginHeader.Merge(m, src)
+}
+func (m *PluginHeader) XXX_Size() int {
+	return m.Size()
+}
+func (m *PluginHeader) XXX_DiscardUnknown() {
+	xxx_messageInfo_PluginHeader.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PluginHeader proto.InternalMessageInfo
+
+func (m *PluginHeader) GetDriver() DriverInfo {
+	if m != nil {
+		return m.Driver
+	}
+	return DriverInfo{}
+}
+
+func (m *PluginHeader) GetRuntime() RuntimeInfo {
+	if m != nil {
+		return m.Runtime
+	}
+	return RuntimeInfo{}
+}
+
+type PluginChunk struct {
+	Data []byte `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+}
+
+func (m *PluginChunk) Reset()         { *m = PluginChunk{} }
+func (m *PluginChunk) String() string { return proto.CompactTextString(m) }
+func (*PluginChunk) ProtoMessage()    {}
+func (*PluginChunk) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9263e29e3d7880f3, []int{3}
+}
+func (m *PluginChunk) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *PluginChunk) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_PluginChunk.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *PluginChunk) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PluginChunk.Merge(m, src)
+}
+func (m *PluginChunk) XXX_Size() int {
+	return m.Size()
+}
+func (m *PluginChunk) XXX_DiscardUnknown() {
+	xxx_messageInfo_PluginChunk.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PluginChunk proto.InternalMessageInfo
+
+func (m *PluginChunk) GetData() []byte {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
+type PluginTrailer struct {
+	Checksum string `protobuf:"bytes,1,opt,name=checksum,proto3" json:"checksum,omitempty"`
+}
+
+func (m *PluginTrailer) Reset()         { *m = PluginTrailer{} }
+func (m *PluginTrailer) String() string { return proto.CompactTextString(m) }
+func (*PluginTrailer) ProtoMessage()    {}
+func (*PluginTrailer) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9263e29e3d7880f3, []int{4}
+}
+func (m *PluginTrailer) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *PluginTrailer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_PluginTrailer.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *PluginTrailer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PluginTrailer.Merge(m, src)
+}
+func (m *PluginTrailer) XXX_Size() int {
+	return m.Size()
+}
+func (m *PluginTrailer) XXX_DiscardUnknown() {
+	xxx_messageInfo_PluginTrailer.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PluginTrailer proto.InternalMessageInfo
+
+func (m *PluginTrailer) GetChecksum() string {
+	if m != nil {
+		return m.Checksum
+	}
+	return ""
+}
+
+type PullDriverRequest struct {
+	Header *PluginHeader `protobuf:"bytes,1,opt,name=header,proto3" json:"header,omitempty"`
 }
 
 func (m *PullDriverRequest) Reset()         { *m = PullDriverRequest{} }
 func (m *PullDriverRequest) String() string { return proto.CompactTextString(m) }
 func (*PullDriverRequest) ProtoMessage()    {}
 func (*PullDriverRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9263e29e3d7880f3, []int{2}
+	return fileDescriptor_9263e29e3d7880f3, []int{5}
 }
 func (m *PullDriverRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -161,29 +300,25 @@ func (m *PullDriverRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PullDriverRequest proto.InternalMessageInfo
 
-func (m *PullDriverRequest) GetDriver() DriverInfo {
+func (m *PullDriverRequest) GetHeader() *PluginHeader {
 	if m != nil {
-		return m.Driver
+		return m.Header
 	}
-	return DriverInfo{}
-}
-
-func (m *PullDriverRequest) GetRuntime() RuntimeInfo {
-	if m != nil {
-		return m.Runtime
-	}
-	return RuntimeInfo{}
+	return nil
 }
 
 type PullDriverResponse struct {
-	Data []byte `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	// Types that are valid to be assigned to Response:
+	//	*PullDriverResponse_Chunk
+	//	*PullDriverResponse_Trailer
+	Response isPullDriverResponse_Response `protobuf_oneof:"response"`
 }
 
 func (m *PullDriverResponse) Reset()         { *m = PullDriverResponse{} }
 func (m *PullDriverResponse) String() string { return proto.CompactTextString(m) }
 func (*PullDriverResponse) ProtoMessage()    {}
 func (*PullDriverResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9263e29e3d7880f3, []int{3}
+	return fileDescriptor_9263e29e3d7880f3, []int{6}
 }
 func (m *PullDriverResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -212,24 +347,64 @@ func (m *PullDriverResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PullDriverResponse proto.InternalMessageInfo
 
-func (m *PullDriverResponse) GetData() []byte {
+type isPullDriverResponse_Response interface {
+	isPullDriverResponse_Response()
+	MarshalTo([]byte) (int, error)
+	Size() int
+}
+
+type PullDriverResponse_Chunk struct {
+	Chunk *PluginChunk `protobuf:"bytes,1,opt,name=chunk,proto3,oneof" json:"chunk,omitempty"`
+}
+type PullDriverResponse_Trailer struct {
+	Trailer *PluginTrailer `protobuf:"bytes,2,opt,name=trailer,proto3,oneof" json:"trailer,omitempty"`
+}
+
+func (*PullDriverResponse_Chunk) isPullDriverResponse_Response()   {}
+func (*PullDriverResponse_Trailer) isPullDriverResponse_Response() {}
+
+func (m *PullDriverResponse) GetResponse() isPullDriverResponse_Response {
 	if m != nil {
-		return m.Data
+		return m.Response
 	}
 	return nil
 }
 
+func (m *PullDriverResponse) GetChunk() *PluginChunk {
+	if x, ok := m.GetResponse().(*PullDriverResponse_Chunk); ok {
+		return x.Chunk
+	}
+	return nil
+}
+
+func (m *PullDriverResponse) GetTrailer() *PluginTrailer {
+	if x, ok := m.GetResponse().(*PullDriverResponse_Trailer); ok {
+		return x.Trailer
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*PullDriverResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*PullDriverResponse_Chunk)(nil),
+		(*PullDriverResponse_Trailer)(nil),
+	}
+}
+
 type PushDriverRequest struct {
-	Driver  DriverInfo  `protobuf:"bytes,1,opt,name=driver,proto3" json:"driver"`
-	Runtime RuntimeInfo `protobuf:"bytes,2,opt,name=runtime,proto3" json:"runtime"`
-	Data    []byte      `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	// Types that are valid to be assigned to Request:
+	//	*PushDriverRequest_Header
+	//	*PushDriverRequest_Chunk
+	//	*PushDriverRequest_Trailer
+	Request isPushDriverRequest_Request `protobuf_oneof:"request"`
 }
 
 func (m *PushDriverRequest) Reset()         { *m = PushDriverRequest{} }
 func (m *PushDriverRequest) String() string { return proto.CompactTextString(m) }
 func (*PushDriverRequest) ProtoMessage()    {}
 func (*PushDriverRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9263e29e3d7880f3, []int{4}
+	return fileDescriptor_9263e29e3d7880f3, []int{7}
 }
 func (m *PushDriverRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -258,25 +433,61 @@ func (m *PushDriverRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PushDriverRequest proto.InternalMessageInfo
 
-func (m *PushDriverRequest) GetDriver() DriverInfo {
-	if m != nil {
-		return m.Driver
-	}
-	return DriverInfo{}
+type isPushDriverRequest_Request interface {
+	isPushDriverRequest_Request()
+	MarshalTo([]byte) (int, error)
+	Size() int
 }
 
-func (m *PushDriverRequest) GetRuntime() RuntimeInfo {
-	if m != nil {
-		return m.Runtime
-	}
-	return RuntimeInfo{}
+type PushDriverRequest_Header struct {
+	Header *PluginHeader `protobuf:"bytes,1,opt,name=header,proto3,oneof" json:"header,omitempty"`
+}
+type PushDriverRequest_Chunk struct {
+	Chunk *PluginChunk `protobuf:"bytes,2,opt,name=chunk,proto3,oneof" json:"chunk,omitempty"`
+}
+type PushDriverRequest_Trailer struct {
+	Trailer *PluginTrailer `protobuf:"bytes,3,opt,name=trailer,proto3,oneof" json:"trailer,omitempty"`
 }
 
-func (m *PushDriverRequest) GetData() []byte {
+func (*PushDriverRequest_Header) isPushDriverRequest_Request()  {}
+func (*PushDriverRequest_Chunk) isPushDriverRequest_Request()   {}
+func (*PushDriverRequest_Trailer) isPushDriverRequest_Request() {}
+
+func (m *PushDriverRequest) GetRequest() isPushDriverRequest_Request {
 	if m != nil {
-		return m.Data
+		return m.Request
 	}
 	return nil
+}
+
+func (m *PushDriverRequest) GetHeader() *PluginHeader {
+	if x, ok := m.GetRequest().(*PushDriverRequest_Header); ok {
+		return x.Header
+	}
+	return nil
+}
+
+func (m *PushDriverRequest) GetChunk() *PluginChunk {
+	if x, ok := m.GetRequest().(*PushDriverRequest_Chunk); ok {
+		return x.Chunk
+	}
+	return nil
+}
+
+func (m *PushDriverRequest) GetTrailer() *PluginTrailer {
+	if x, ok := m.GetRequest().(*PushDriverRequest_Trailer); ok {
+		return x.Trailer
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*PushDriverRequest) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*PushDriverRequest_Header)(nil),
+		(*PushDriverRequest_Chunk)(nil),
+		(*PushDriverRequest_Trailer)(nil),
+	}
 }
 
 type PushDriverResponse struct {
@@ -286,7 +497,7 @@ func (m *PushDriverResponse) Reset()         { *m = PushDriverResponse{} }
 func (m *PushDriverResponse) String() string { return proto.CompactTextString(m) }
 func (*PushDriverResponse) ProtoMessage()    {}
 func (*PushDriverResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9263e29e3d7880f3, []int{5}
+	return fileDescriptor_9263e29e3d7880f3, []int{8}
 }
 func (m *PushDriverResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -318,6 +529,9 @@ var xxx_messageInfo_PushDriverResponse proto.InternalMessageInfo
 func init() {
 	proto.RegisterType((*DriverInfo)(nil), "atomix.runtime.v1.DriverInfo")
 	proto.RegisterType((*RuntimeInfo)(nil), "atomix.runtime.v1.RuntimeInfo")
+	proto.RegisterType((*PluginHeader)(nil), "atomix.runtime.v1.PluginHeader")
+	proto.RegisterType((*PluginChunk)(nil), "atomix.runtime.v1.PluginChunk")
+	proto.RegisterType((*PluginTrailer)(nil), "atomix.runtime.v1.PluginTrailer")
 	proto.RegisterType((*PullDriverRequest)(nil), "atomix.runtime.v1.PullDriverRequest")
 	proto.RegisterType((*PullDriverResponse)(nil), "atomix.runtime.v1.PullDriverResponse")
 	proto.RegisterType((*PushDriverRequest)(nil), "atomix.runtime.v1.PushDriverRequest")
@@ -327,28 +541,36 @@ func init() {
 func init() { proto.RegisterFile("atomix/runtime/v1/registry.proto", fileDescriptor_9263e29e3d7880f3) }
 
 var fileDescriptor_9263e29e3d7880f3 = []byte{
-	// 334 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x48, 0x2c, 0xc9, 0xcf,
-	0xcd, 0xac, 0xd0, 0x2f, 0x2a, 0xcd, 0x2b, 0xc9, 0xcc, 0x4d, 0xd5, 0x2f, 0x33, 0xd4, 0x2f, 0x4a,
-	0x4d, 0xcf, 0x2c, 0x2e, 0x29, 0xaa, 0xd4, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x84, 0xa8,
-	0xd0, 0x83, 0xaa, 0xd0, 0x2b, 0x33, 0x94, 0x12, 0x49, 0xcf, 0x4f, 0xcf, 0x07, 0xcb, 0xea, 0x83,
-	0x58, 0x10, 0x85, 0x4a, 0x56, 0x5c, 0x5c, 0x2e, 0x45, 0x99, 0x65, 0xa9, 0x45, 0x9e, 0x79, 0x69,
-	0xf9, 0x42, 0x42, 0x5c, 0x2c, 0x79, 0x89, 0xb9, 0xa9, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41,
-	0x60, 0xb6, 0x90, 0x04, 0x17, 0x7b, 0x59, 0x6a, 0x51, 0x71, 0x66, 0x7e, 0x9e, 0x04, 0x13, 0x58,
-	0x18, 0xc6, 0x55, 0x52, 0xe7, 0xe2, 0x0e, 0x82, 0x98, 0x0f, 0xd6, 0x8c, 0xa4, 0x90, 0x11, 0x55,
-	0xe1, 0x04, 0x46, 0x2e, 0xc1, 0x80, 0xd2, 0x9c, 0x1c, 0x88, 0x4d, 0x41, 0xa9, 0x85, 0xa5, 0xa9,
-	0xc5, 0x25, 0x42, 0xd6, 0x5c, 0x6c, 0x29, 0x60, 0x01, 0xb0, 0x72, 0x6e, 0x23, 0x59, 0x3d, 0x0c,
-	0x47, 0xeb, 0x21, 0xdc, 0xe6, 0xc4, 0x72, 0xe2, 0x9e, 0x3c, 0x43, 0x10, 0x54, 0x8b, 0x90, 0x1d,
-	0x17, 0x3b, 0x54, 0x19, 0xd8, 0x55, 0xdc, 0x46, 0x72, 0x58, 0x74, 0x23, 0xb9, 0x0e, 0xaa, 0x1d,
-	0xa6, 0x49, 0x49, 0x83, 0x4b, 0x08, 0xd9, 0x45, 0xc5, 0x05, 0xf9, 0x79, 0xc5, 0xa9, 0x20, 0xff,
-	0xa7, 0x24, 0x96, 0x24, 0x82, 0x1d, 0xc4, 0x13, 0x04, 0x66, 0x2b, 0x2d, 0x01, 0x3b, 0xbe, 0x38,
-	0x63, 0xf0, 0x38, 0x1e, 0xee, 0x4c, 0x66, 0x24, 0x67, 0x8a, 0x80, 0x3c, 0x84, 0x70, 0x25, 0xc4,
-	0x43, 0x46, 0x47, 0x18, 0xb9, 0x38, 0x82, 0xa0, 0x49, 0x43, 0x28, 0x9a, 0x8b, 0x0b, 0xa1, 0x44,
-	0x48, 0x05, 0x8b, 0x9d, 0x18, 0xfe, 0x94, 0x52, 0x25, 0xa0, 0x0a, 0x62, 0x8f, 0x06, 0x23, 0xc4,
-	0x70, 0x58, 0x80, 0xe2, 0x30, 0x1c, 0x2d, 0x05, 0xe0, 0x30, 0x1c, 0x3d, 0x56, 0x0c, 0x18, 0x9d,
-	0x24, 0x4e, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x09, 0x8f,
-	0xe5, 0x18, 0x2e, 0x3c, 0x96, 0x63, 0xb8, 0xf1, 0x58, 0x8e, 0x21, 0x89, 0x0d, 0x9c, 0x8c, 0x8d,
-	0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x62, 0xee, 0x4c, 0x78, 0x13, 0x03, 0x00, 0x00,
+	// 462 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x93, 0x4d, 0x6f, 0xd3, 0x30,
+	0x1c, 0xc6, 0xe3, 0x31, 0xda, 0xee, 0x9f, 0x71, 0x98, 0xb5, 0x43, 0x54, 0x09, 0xaf, 0x58, 0x20,
+	0x26, 0x21, 0x25, 0xac, 0x48, 0x20, 0x5e, 0xc4, 0xa1, 0x70, 0x08, 0x12, 0x87, 0xc9, 0xe2, 0xc6,
+	0x29, 0xb4, 0x26, 0x89, 0x96, 0xc4, 0xc3, 0x79, 0x11, 0x7c, 0x06, 0x2e, 0x9c, 0xf8, 0x44, 0x1c,
+	0x76, 0x63, 0x47, 0x4e, 0x08, 0xb5, 0x5f, 0x04, 0xc5, 0x76, 0x48, 0x56, 0x1a, 0xa1, 0x72, 0xb3,
+	0xdb, 0xe7, 0x79, 0xfc, 0xfc, 0xfe, 0xb1, 0x61, 0x12, 0x14, 0x22, 0x8d, 0x3f, 0x7a, 0xb2, 0xcc,
+	0x8a, 0x38, 0xe5, 0x5e, 0x75, 0xe2, 0x49, 0x1e, 0xc6, 0x79, 0x21, 0x3f, 0xb9, 0xe7, 0x52, 0x14,
+	0x02, 0x1f, 0x68, 0x85, 0x6b, 0x14, 0x6e, 0x75, 0x32, 0x3e, 0x0c, 0x45, 0x28, 0xd4, 0xbf, 0x5e,
+	0xbd, 0xd2, 0x42, 0xfa, 0x04, 0xe0, 0xa5, 0x8c, 0x2b, 0x2e, 0x5f, 0x65, 0xef, 0x05, 0xc6, 0xb0,
+	0x9b, 0x05, 0x29, 0x77, 0xd0, 0x04, 0x1d, 0xef, 0x31, 0xb5, 0xc6, 0x0e, 0x0c, 0x2b, 0x2e, 0xf3,
+	0x58, 0x64, 0xce, 0x8e, 0xfa, 0xb9, 0xd9, 0xd2, 0xbb, 0x60, 0x33, 0x9d, 0xaf, 0xcc, 0x1d, 0x21,
+	0xba, 0x2a, 0xfc, 0x8c, 0x60, 0xff, 0x34, 0x29, 0xc3, 0x38, 0xf3, 0x79, 0xb0, 0xe0, 0x12, 0x3f,
+	0x85, 0xc1, 0x42, 0x9d, 0xaa, 0x94, 0xf6, 0xf4, 0xa6, 0xfb, 0x57, 0x5f, 0xb7, 0xad, 0x35, 0xdb,
+	0xbd, 0xf8, 0x79, 0x64, 0x31, 0x63, 0xc1, 0xcf, 0x61, 0x68, 0x64, 0xaa, 0x90, 0x3d, 0x25, 0x1b,
+	0xdc, 0x9d, 0x62, 0xc6, 0xde, 0x98, 0xe8, 0x2d, 0xb0, 0x75, 0x99, 0x17, 0x51, 0x99, 0x9d, 0xd5,
+	0xcc, 0x8b, 0xa0, 0x08, 0x54, 0x93, 0x7d, 0xa6, 0xd6, 0xf4, 0x1e, 0xdc, 0xd0, 0x92, 0x37, 0x32,
+	0x88, 0x13, 0x2e, 0xf1, 0x18, 0x46, 0xf3, 0x88, 0xcf, 0xcf, 0xf2, 0x32, 0x35, 0x70, 0x7f, 0xf6,
+	0xf4, 0x35, 0x1c, 0x9c, 0x96, 0x49, 0xa2, 0xfb, 0x32, 0xfe, 0xa1, 0xe4, 0x79, 0x81, 0x1f, 0xc1,
+	0x20, 0x52, 0xac, 0x86, 0xf0, 0x68, 0x43, 0xc7, 0xee, 0x48, 0x98, 0x91, 0xd3, 0xaf, 0x08, 0x70,
+	0x37, 0x2e, 0x3f, 0x17, 0x59, 0xce, 0xf1, 0x43, 0xb8, 0x3e, 0xaf, 0xeb, 0x9a, 0x38, 0xd2, 0x1b,
+	0xa7, 0xa0, 0x7c, 0x8b, 0x69, 0x39, 0x7e, 0x06, 0xc3, 0x42, 0x33, 0x98, 0x61, 0x4d, 0x7a, 0x9d,
+	0x86, 0xd5, 0xb7, 0x58, 0x63, 0x99, 0x01, 0x8c, 0xa4, 0x69, 0x40, 0xbf, 0xa3, 0x9a, 0x33, 0x8f,
+	0xae, 0x72, 0x3e, 0xde, 0x92, 0xd3, 0xb7, 0x1a, 0xd2, 0x16, 0x69, 0xe7, 0xbf, 0x91, 0xae, 0x6d,
+	0x8f, 0xb4, 0x07, 0x43, 0xa9, 0xbb, 0xd3, 0xc3, 0x7a, 0xd2, 0x2d, 0x90, 0xe6, 0x9c, 0x7e, 0x43,
+	0x30, 0x62, 0xe6, 0x35, 0xe1, 0xb7, 0x00, 0xad, 0x04, 0xdf, 0xde, 0x74, 0xd0, 0xfa, 0x48, 0xc6,
+	0x77, 0xfe, 0xa1, 0xd2, 0xe7, 0x1c, 0x23, 0x1d, 0xde, 0x7c, 0xe9, 0x9e, 0xf0, 0xb5, 0x7b, 0xd5,
+	0x13, 0xbe, 0x7e, 0x5d, 0xee, 0xa3, 0x99, 0x73, 0xb1, 0x24, 0xe8, 0x72, 0x49, 0xd0, 0xaf, 0x25,
+	0x41, 0x5f, 0x56, 0xc4, 0xba, 0x5c, 0x11, 0xeb, 0xc7, 0x8a, 0x58, 0xef, 0x06, 0xea, 0xe5, 0x3f,
+	0xf8, 0x1d, 0x00, 0x00, 0xff, 0xff, 0xb4, 0x8d, 0x44, 0x69, 0x46, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -595,7 +817,7 @@ func (m *RuntimeInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *PullDriverRequest) Marshal() (dAtA []byte, err error) {
+func (m *PluginHeader) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -605,12 +827,12 @@ func (m *PullDriverRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *PullDriverRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *PluginHeader) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *PullDriverRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *PluginHeader) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -635,6 +857,101 @@ func (m *PullDriverRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *PluginChunk) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *PluginChunk) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *PluginChunk) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Data) > 0 {
+		i -= len(m.Data)
+		copy(dAtA[i:], m.Data)
+		i = encodeVarintRegistry(dAtA, i, uint64(len(m.Data)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *PluginTrailer) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *PluginTrailer) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *PluginTrailer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Checksum) > 0 {
+		i -= len(m.Checksum)
+		copy(dAtA[i:], m.Checksum)
+		i = encodeVarintRegistry(dAtA, i, uint64(len(m.Checksum)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *PullDriverRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *PullDriverRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *PullDriverRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Header != nil {
+		{
+			size, err := m.Header.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRegistry(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -658,16 +975,60 @@ func (m *PullDriverResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Data) > 0 {
-		i -= len(m.Data)
-		copy(dAtA[i:], m.Data)
-		i = encodeVarintRegistry(dAtA, i, uint64(len(m.Data)))
+	if m.Response != nil {
+		{
+			size := m.Response.Size()
+			i -= size
+			if _, err := m.Response.MarshalTo(dAtA[i:]); err != nil {
+				return 0, err
+			}
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *PullDriverResponse_Chunk) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *PullDriverResponse_Chunk) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.Chunk != nil {
+		{
+			size, err := m.Chunk.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRegistry(dAtA, i, uint64(size))
+		}
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
+func (m *PullDriverResponse_Trailer) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
 
+func (m *PullDriverResponse_Trailer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.Trailer != nil {
+		{
+			size, err := m.Trailer.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRegistry(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	return len(dAtA) - i, nil
+}
 func (m *PushDriverRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -688,36 +1049,81 @@ func (m *PushDriverRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Data) > 0 {
-		i -= len(m.Data)
-		copy(dAtA[i:], m.Data)
-		i = encodeVarintRegistry(dAtA, i, uint64(len(m.Data)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	{
-		size, err := m.Runtime.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
+	if m.Request != nil {
+		{
+			size := m.Request.Size()
+			i -= size
+			if _, err := m.Request.MarshalTo(dAtA[i:]); err != nil {
+				return 0, err
+			}
 		}
-		i -= size
-		i = encodeVarintRegistry(dAtA, i, uint64(size))
 	}
-	i--
-	dAtA[i] = 0x12
-	{
-		size, err := m.Driver.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintRegistry(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
+func (m *PushDriverRequest_Header) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *PushDriverRequest_Header) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.Header != nil {
+		{
+			size, err := m.Header.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRegistry(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+func (m *PushDriverRequest_Chunk) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *PushDriverRequest_Chunk) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.Chunk != nil {
+		{
+			size, err := m.Chunk.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRegistry(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	return len(dAtA) - i, nil
+}
+func (m *PushDriverRequest_Trailer) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *PushDriverRequest_Trailer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.Trailer != nil {
+		{
+			size, err := m.Trailer.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRegistry(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	return len(dAtA) - i, nil
+}
 func (m *PushDriverResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -782,7 +1188,7 @@ func (m *RuntimeInfo) Size() (n int) {
 	return n
 }
 
-func (m *PullDriverRequest) Size() (n int) {
+func (m *PluginHeader) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -792,6 +1198,45 @@ func (m *PullDriverRequest) Size() (n int) {
 	n += 1 + l + sovRegistry(uint64(l))
 	l = m.Runtime.Size()
 	n += 1 + l + sovRegistry(uint64(l))
+	return n
+}
+
+func (m *PluginChunk) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Data)
+	if l > 0 {
+		n += 1 + l + sovRegistry(uint64(l))
+	}
+	return n
+}
+
+func (m *PluginTrailer) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Checksum)
+	if l > 0 {
+		n += 1 + l + sovRegistry(uint64(l))
+	}
+	return n
+}
+
+func (m *PullDriverRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Header != nil {
+		l = m.Header.Size()
+		n += 1 + l + sovRegistry(uint64(l))
+	}
 	return n
 }
 
@@ -801,30 +1246,84 @@ func (m *PullDriverResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Data)
-	if l > 0 {
-		n += 1 + l + sovRegistry(uint64(l))
+	if m.Response != nil {
+		n += m.Response.Size()
 	}
 	return n
 }
 
+func (m *PullDriverResponse_Chunk) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Chunk != nil {
+		l = m.Chunk.Size()
+		n += 1 + l + sovRegistry(uint64(l))
+	}
+	return n
+}
+func (m *PullDriverResponse_Trailer) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Trailer != nil {
+		l = m.Trailer.Size()
+		n += 1 + l + sovRegistry(uint64(l))
+	}
+	return n
+}
 func (m *PushDriverRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.Driver.Size()
-	n += 1 + l + sovRegistry(uint64(l))
-	l = m.Runtime.Size()
-	n += 1 + l + sovRegistry(uint64(l))
-	l = len(m.Data)
-	if l > 0 {
-		n += 1 + l + sovRegistry(uint64(l))
+	if m.Request != nil {
+		n += m.Request.Size()
 	}
 	return n
 }
 
+func (m *PushDriverRequest_Header) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Header != nil {
+		l = m.Header.Size()
+		n += 1 + l + sovRegistry(uint64(l))
+	}
+	return n
+}
+func (m *PushDriverRequest_Chunk) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Chunk != nil {
+		l = m.Chunk.Size()
+		n += 1 + l + sovRegistry(uint64(l))
+	}
+	return n
+}
+func (m *PushDriverRequest_Trailer) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Trailer != nil {
+		l = m.Trailer.Size()
+		n += 1 + l + sovRegistry(uint64(l))
+	}
+	return n
+}
 func (m *PushDriverResponse) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1036,7 +1535,7 @@ func (m *RuntimeInfo) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *PullDriverRequest) Unmarshal(dAtA []byte) error {
+func (m *PluginHeader) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1059,10 +1558,10 @@ func (m *PullDriverRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: PullDriverRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: PluginHeader: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PullDriverRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: PluginHeader: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1128,6 +1627,258 @@ func (m *PullDriverRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Runtime.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRegistry(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PluginChunk) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRegistry
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PluginChunk: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PluginChunk: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRegistry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Data = append(m.Data[:0], dAtA[iNdEx:postIndex]...)
+			if m.Data == nil {
+				m.Data = []byte{}
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRegistry(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PluginTrailer) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRegistry
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PluginTrailer: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PluginTrailer: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Checksum", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRegistry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Checksum = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRegistry(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PullDriverRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRegistry
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PullDriverRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PullDriverRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Header", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRegistry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Header == nil {
+				m.Header = &PluginHeader{}
+			}
+			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1183,9 +1934,9 @@ func (m *PullDriverResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Chunk", wireType)
 			}
-			var byteLen int
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowRegistry
@@ -1195,25 +1946,61 @@ func (m *PullDriverResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthRegistry
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Data = append(m.Data[:0], dAtA[iNdEx:postIndex]...)
-			if m.Data == nil {
-				m.Data = []byte{}
+			v := &PluginChunk{}
+			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
 			}
+			m.Response = &PullDriverResponse_Chunk{v}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trailer", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRegistry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &PluginTrailer{}
+			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Response = &PullDriverResponse_Trailer{v}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1267,7 +2054,7 @@ func (m *PushDriverRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Driver", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Header", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1294,13 +2081,15 @@ func (m *PushDriverRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Driver.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			v := &PluginHeader{}
+			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			m.Request = &PushDriverRequest_Header{v}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Runtime", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Chunk", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1327,15 +2116,17 @@ func (m *PushDriverRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Runtime.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			v := &PluginChunk{}
+			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			m.Request = &PushDriverRequest_Chunk{v}
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Trailer", wireType)
 			}
-			var byteLen int
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowRegistry
@@ -1345,25 +2136,26 @@ func (m *PushDriverRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthRegistry
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Data = append(m.Data[:0], dAtA[iNdEx:postIndex]...)
-			if m.Data == nil {
-				m.Data = []byte{}
+			v := &PluginTrailer{}
+			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
 			}
+			m.Request = &PushDriverRequest_Trailer{v}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

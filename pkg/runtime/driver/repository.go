@@ -6,6 +6,8 @@ package driver
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	runtimev1 "github.com/atomix/runtime-api/api/atomix/runtime/v1"
 	"github.com/atomix/runtime-api/pkg/errors"
@@ -18,6 +20,8 @@ import (
 	"plugin"
 	"sync"
 )
+
+const bufferSize = 1024 * 1024
 
 func NewRepository(opts ...RepositoryOption) (*Repository, error) {
 	var options RepositoryOptions
@@ -52,33 +56,46 @@ func (r *Repository) connect() error {
 	return nil
 }
 
-func (r *Repository) Load(ctx context.Context, name, version, apiVersion string) (Driver, error) {
-	plugin, err := r.get(name, version, apiVersion).Load(ctx)
-	if err != nil {
+func (r *Repository) Load(ctx context.Context, info PluginInfo) (Driver, error) {
+	plugin := r.get(info)
+	driver, err := plugin.Load()
+	if err == nil {
+		return driver, nil
+	}
+
+	if err := plugin.Pull(ctx); err != nil {
 		return nil, err
 	}
-	symbol, err := plugin.Lookup("Driver")
-	if err != nil {
-		return nil, err
-	}
-	return symbol.(Driver), nil
+	return plugin.Load()
 }
 
-func (r *Repository) get(name, version, apiVersion string) *Plugin {
+func (r *Repository) Pull(ctx context.Context, info PluginInfo) (*Plugin, error) {
+	plugin := r.get(info)
+	if err := plugin.Pull(ctx); err != nil {
+		return nil, err
+	}
+	return plugin, nil
+}
+
+func (r *Repository) Push(ctx context.Context, info PluginInfo) error {
+	return r.get(info).Push(ctx)
+}
+
+func (r *Repository) get(info PluginInfo) *Plugin {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	path := filepath.Join(r.Path, fmt.Sprintf("%s-%s.%s.so", name, version, apiVersion))
-	plugin, ok := r.plugins[path]
+	if info.Path == "" {
+		info.Path = filepath.Join(r.Path, fmt.Sprintf("%s-%s.%s.so", info.Name, info.Version, info.APIVersion))
+	}
+
+	plugin, ok := r.plugins[info.Path]
 	if !ok {
 		plugin = &Plugin{
-			registry:   r,
-			Name:       name,
-			Version:    version,
-			APIVersion: apiVersion,
-			Path:       path,
+			PluginInfo: info,
+			repository: r,
 		}
-		r.plugins[path] = plugin
+		r.plugins[info.Path] = plugin
 	}
 	return plugin
 }
@@ -87,76 +104,206 @@ func (r *Repository) Close() error {
 	return r.conn.Close()
 }
 
-type Plugin struct {
-	registry   *Repository
+type PluginInfo struct {
 	Name       string
 	Version    string
 	APIVersion string
 	Path       string
-	plugin     *plugin.Plugin
+}
+
+type Plugin struct {
+	PluginInfo
+	repository *Repository
+	driver     Driver
 	mu         sync.RWMutex
 }
 
-func (p *Plugin) Load(ctx context.Context) (*plugin.Plugin, error) {
+func (p *Plugin) Load() (Driver, error) {
 	p.mu.RLock()
-	loaded := p.plugin
+	driver := p.driver
 	p.mu.RUnlock()
-	if loaded != nil {
-		return loaded, nil
+	if driver != nil {
+		return driver, nil
 	}
 
 	p.mu.Lock()
 	defer p.mu.Unlock()
-
-	if p.plugin != nil {
-		return p.plugin, nil
+	if p.driver != nil {
+		return p.driver, nil
 	}
 
-	client := runtimev1.NewRegistryClient(p.registry.conn)
-	request := &runtimev1.PullDriverRequest{
-		Driver: runtimev1.DriverInfo{
-			Name:    p.Name,
-			Version: p.Version,
+	plugin, err := plugin.Open(p.Path)
+	if err != nil {
+		return nil, err
+	}
+	symbol, err := plugin.Lookup("Driver")
+	if err != nil {
+		return nil, err
+	}
+	p.driver = symbol.(Driver)
+	return driver, nil
+}
+
+func (p *Plugin) Push(ctx context.Context) error {
+	client := runtimev1.NewRegistryClient(p.repository.conn)
+
+	reader, err := os.Open(p.Path)
+	if err != nil {
+		return err
+	}
+	defer reader.Close()
+
+	stream, err := client.PushDriver(ctx)
+	if err != nil {
+		return errors.From(err)
+	}
+
+	request := &runtimev1.PushDriverRequest{
+		Request: &runtimev1.PushDriverRequest_Header{
+			Header: &runtimev1.PluginHeader{
+				Driver: runtimev1.DriverInfo{
+					Name:    p.Name,
+					Version: p.Version,
+				},
+				Runtime: runtimev1.RuntimeInfo{
+					Version: p.APIVersion,
+				},
+			},
 		},
-		Runtime: runtimev1.RuntimeInfo{
-			Version: p.APIVersion,
+	}
+	if err := stream.Send(request); err != nil {
+		return errors.From(err)
+	}
+
+	sha := sha256.New()
+	buf := make([]byte, bufferSize)
+	for {
+		i, err := reader.Read(buf)
+		if err == io.EOF {
+			checksum := hex.EncodeToString(sha.Sum(nil))
+			request := &runtimev1.PushDriverRequest{
+				Request: &runtimev1.PushDriverRequest_Trailer{
+					Trailer: &runtimev1.PluginTrailer{
+						Checksum: checksum,
+					},
+				},
+			}
+			if err := stream.Send(request); err != nil {
+				return errors.From(err)
+			}
+			return nil
+		}
+		if err != nil {
+			return errors.NewInternal(err.Error())
+		}
+
+		request := &runtimev1.PushDriverRequest{
+			Request: &runtimev1.PushDriverRequest_Chunk{
+				Chunk: &runtimev1.PluginChunk{
+					Data: buf[:i+1],
+				},
+			},
+		}
+		if err := stream.Send(request); err != nil {
+			return errors.From(err)
+		}
+
+		_, err = sha.Write(buf[:i+1])
+		if err != nil {
+			return errors.NewInternal(err.Error())
+		}
+	}
+}
+
+func (p *Plugin) Pull(ctx context.Context) error {
+	client := runtimev1.NewRegistryClient(p.repository.conn)
+	request := &runtimev1.PullDriverRequest{
+		Header: &runtimev1.PluginHeader{
+			Driver: runtimev1.DriverInfo{
+				Name:    p.Name,
+				Version: p.Version,
+			},
+			Runtime: runtimev1.RuntimeInfo{
+				Version: p.APIVersion,
+			},
 		},
 	}
 	stream, err := client.PullDriver(ctx, request)
 	if err != nil {
-		return nil, errors.From(err)
+		return errors.From(err)
 	}
 
 	writer, err := os.Create(p.Path)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
+	sha := sha256.New()
 	for {
 		response, err := stream.Recv()
-		if err == io.EOF {
-			err = writer.Close()
-			if err != nil {
-				return nil, err
-			}
-			loaded, err := plugin.Open(p.Path)
-			if err != nil {
-				return nil, err
-			}
-			p.plugin = loaded
-			return loaded, nil
-		}
 		if err != nil {
 			_ = writer.Close()
 			_ = os.Remove(p.Path)
-			return nil, errors.From(err)
+			return errors.From(err)
 		}
 
-		_, err = writer.Write(response.Data)
+		switch r := response.Response.(type) {
+		case *runtimev1.PullDriverResponse_Chunk:
+			_, err = writer.Write(r.Chunk.Data)
+			if err != nil {
+				_ = writer.Close()
+				_ = os.Remove(p.Path)
+				return errors.NewInternal(err.Error())
+			}
+
+			_, err = sha.Write(r.Chunk.Data)
+			if err != nil {
+				_ = writer.Close()
+				_ = os.Remove(p.Path)
+				return errors.NewInternal(err.Error())
+			}
+		case *runtimev1.PullDriverResponse_Trailer:
+			err = writer.Close()
+			if err != nil {
+				return errors.NewInternal(err.Error())
+			}
+			return p.validate(r.Trailer.Checksum)
+		}
+	}
+}
+
+func (p *Plugin) validate(checksum string) error {
+	filesum, err := p.checksum()
+	if err != nil {
+		return err
+	}
+	if filesum != checksum {
+		return errors.NewFault("checksum for plugin %s did not match", p.Path)
+	}
+	return nil
+}
+
+func (p *Plugin) checksum() (string, error) {
+	reader, err := os.Open(p.Path)
+	if err != nil {
+		return "", err
+	}
+	defer reader.Close()
+
+	sha := sha256.New()
+	buf := make([]byte, bufferSize)
+	for {
+		_, err := reader.Read(buf)
+		if err == io.EOF {
+			return hex.EncodeToString(sha.Sum(nil)), nil
+		}
 		if err != nil {
-			_ = writer.Close()
-			_ = os.Remove(p.Path)
-			return nil, err
+			return "", err
+		}
+
+		_, err = sha.Write(buf)
+		if err != nil {
+			return "", err
 		}
 	}
 }
