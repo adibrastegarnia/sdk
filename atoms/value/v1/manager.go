@@ -22,7 +22,7 @@ type valueV1ManagerServer struct {
 }
 
 func (s *valueV1ManagerServer) Create(ctx context.Context, request *valuev1.CreateRequest) (*valuev1.CreateResponse, error) {
-	namespace, err := s.proxies.GetNamespace(ctx, request.Cluster.Name)
+	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.Proto(err)
 	}
@@ -34,7 +34,7 @@ func (s *valueV1ManagerServer) Create(ctx context.Context, request *valuev1.Crea
 }
 
 func (s *valueV1ManagerServer) Close(ctx context.Context, request *valuev1.CloseRequest) (*valuev1.CloseResponse, error) {
-	namespace, err := s.proxies.GetNamespace(ctx, request.Cluster.Name)
+	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.Proto(err)
 	}

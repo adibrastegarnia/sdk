@@ -22,7 +22,7 @@ type topicV1ManagerServer struct {
 }
 
 func (s *topicV1ManagerServer) Create(ctx context.Context, request *topicv1.CreateRequest) (*topicv1.CreateResponse, error) {
-	namespace, err := s.proxies.GetNamespace(ctx, request.Cluster.Name)
+	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.Proto(err)
 	}
@@ -34,7 +34,7 @@ func (s *topicV1ManagerServer) Create(ctx context.Context, request *topicv1.Crea
 }
 
 func (s *topicV1ManagerServer) Close(ctx context.Context, request *topicv1.CloseRequest) (*topicv1.CloseResponse, error) {
-	namespace, err := s.proxies.GetNamespace(ctx, request.Cluster.Name)
+	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.Proto(err)
 	}

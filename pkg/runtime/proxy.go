@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2022-present Open Networking Foundation <info@opennetworking.org>
+// SPDX-FileCopyrightText: 2022-present Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,23 +10,19 @@ import (
 	"sync"
 )
 
-type Proxy interface {
-	Closer
-}
-
-func newProxyCluster[P Proxy](proxies *ProxyRegistry[P], client *AtomClient[P]) *ProxyCluster[P] {
-	return &ProxyCluster[P]{
+func newProxyCluster[T Atom](proxies *ProxyRegistry[T], client *AtomClient[T]) *ProxyCluster[T] {
+	return &ProxyCluster[T]{
 		proxies: proxies,
 		client:  client,
 	}
 }
 
-type ProxyCluster[P Proxy] struct {
-	proxies *ProxyRegistry[P]
-	client  *AtomClient[P]
+type ProxyCluster[T Atom] struct {
+	proxies *ProxyRegistry[T]
+	client  *AtomClient[T]
 }
 
-func (n *ProxyCluster[P]) CreateProxy(ctx context.Context, name string) error {
+func (n *ProxyCluster[T]) CreateProxy(ctx context.Context, name string) error {
 	proxy, err := n.client.GetProxy(ctx, name)
 	if err != nil {
 		return err
@@ -35,7 +31,7 @@ func (n *ProxyCluster[P]) CreateProxy(ctx context.Context, name string) error {
 	return nil
 }
 
-func (n *ProxyCluster[P]) CloseProxy(ctx context.Context, name string) error {
+func (n *ProxyCluster[T]) CloseProxy(ctx context.Context, name string) error {
 	proxy, ok := n.proxies.unregister(name)
 	if !ok {
 		return errors.NewForbidden("proxy '%s' not found", name)
@@ -43,39 +39,39 @@ func (n *ProxyCluster[P]) CloseProxy(ctx context.Context, name string) error {
 	return proxy.Close(ctx)
 }
 
-func NewProxyService[P Proxy](runtime Runtime, primitiveType *AtomType[P], proxies *ProxyRegistry[P]) *ProxyService[P] {
-	return &ProxyService[P]{
+func NewProxyService[T Atom](runtime *Runtime, primitiveType *AtomType[T], proxies *ProxyRegistry[T]) *ProxyService[T] {
+	return &ProxyService[T]{
 		runtime:       runtime,
 		primitiveType: primitiveType,
 		proxies:       proxies,
-		clusters:      make(map[string]*ProxyCluster[P]),
+		clusters:      make(map[string]*ProxyCluster[T]),
 	}
 }
 
-type ProxyService[P Proxy] struct {
-	runtime       Runtime
-	primitiveType *AtomType[P]
-	proxies       *ProxyRegistry[P]
-	clusters      map[string]*ProxyCluster[P]
+type ProxyService[T Atom] struct {
+	runtime       *Runtime
+	primitiveType *AtomType[T]
+	proxies       *ProxyRegistry[T]
+	clusters      map[string]*ProxyCluster[T]
 	mu            sync.RWMutex
 }
 
-func (m *ProxyService[P]) GetNamespace(ctx context.Context, name string) (*ProxyCluster[P], error) {
-	namespace, ok := m.getNamespace(name)
+func (m *ProxyService[T]) GetCluster(ctx context.Context, name string) (*ProxyCluster[T], error) {
+	namespace, ok := m.getCluster(name)
 	if ok {
 		return namespace, nil
 	}
-	return m.newNamespace(ctx, name)
+	return m.newCluster(ctx, name)
 }
 
-func (m *ProxyService[P]) getNamespace(name string) (*ProxyCluster[P], bool) {
+func (m *ProxyService[T]) getCluster(name string) (*ProxyCluster[T], bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	namespace, ok := m.clusters[name]
 	return namespace, ok
 }
 
-func (m *ProxyService[P]) newNamespace(ctx context.Context, name string) (*ProxyCluster[P], error) {
+func (m *ProxyService[T]) newCluster(ctx context.Context, name string) (*ProxyCluster[T], error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -99,34 +95,34 @@ func (m *ProxyService[P]) newNamespace(ctx context.Context, name string) (*Proxy
 	return namespace, nil
 }
 
-func NewProxyRegistry[P Proxy]() *ProxyRegistry[P] {
-	return &ProxyRegistry[P]{
-		proxies: make(map[string]P),
+func NewProxyRegistry[T Atom]() *ProxyRegistry[T] {
+	return &ProxyRegistry[T]{
+		proxies: make(map[string]T),
 	}
 }
 
-type ProxyRegistry[P Proxy] struct {
-	proxies map[string]P
+type ProxyRegistry[T Atom] struct {
+	proxies map[string]T
 	mu      sync.RWMutex
 }
 
-func (r *ProxyRegistry[P]) GetProxy(name string) (P, bool) {
+func (r *ProxyRegistry[T]) GetProxy(name string) (T, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	proxy, ok := r.proxies[name]
 	return proxy, ok
 }
 
-func (r *ProxyRegistry[P]) register(name string, proxy P) {
+func (r *ProxyRegistry[T]) register(name string, proxy T) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.proxies[name] = proxy
 }
 
-func (r *ProxyRegistry[P]) unregister(name string) (P, bool) {
+func (r *ProxyRegistry[T]) unregister(name string) (T, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	var proxy P
+	var proxy T
 	proxy, ok := r.proxies[name]
 	if !ok {
 		return proxy, false

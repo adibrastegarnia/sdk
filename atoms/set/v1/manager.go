@@ -22,7 +22,7 @@ type setV1ManagerServer struct {
 }
 
 func (s *setV1ManagerServer) Create(ctx context.Context, request *setv1.CreateRequest) (*setv1.CreateResponse, error) {
-	namespace, err := s.proxies.GetNamespace(ctx, request.Cluster.Name)
+	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.Proto(err)
 	}
@@ -34,7 +34,7 @@ func (s *setV1ManagerServer) Create(ctx context.Context, request *setv1.CreateRe
 }
 
 func (s *setV1ManagerServer) Close(ctx context.Context, request *setv1.CloseRequest) (*setv1.CloseResponse, error) {
-	namespace, err := s.proxies.GetNamespace(ctx, request.Cluster.Name)
+	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.Proto(err)
 	}

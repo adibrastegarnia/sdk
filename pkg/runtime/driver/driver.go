@@ -1,17 +1,13 @@
-// SPDX-FileCopyrightText: 2022-present Open Networking Foundation <info@opennetworking.org>
+// SPDX-FileCopyrightText: 2022-present Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package runtime
+package driver
 
 import (
 	"context"
 	"github.com/atomix/runtime-api/pkg/config"
 )
-
-type Repository interface {
-	Load(ctx context.Context, name string, version string) (Driver, error)
-}
 
 type Driver interface {
 	Connect(ctx context.Context, config []byte) (Conn, error)

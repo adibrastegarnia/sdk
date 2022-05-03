@@ -22,7 +22,7 @@ type lockV1ManagerServer struct {
 }
 
 func (s *lockV1ManagerServer) Create(ctx context.Context, request *lockv1.CreateRequest) (*lockv1.CreateResponse, error) {
-	namespace, err := s.proxies.GetNamespace(ctx, request.Cluster.Name)
+	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.Proto(err)
 	}
@@ -34,7 +34,7 @@ func (s *lockV1ManagerServer) Create(ctx context.Context, request *lockv1.Create
 }
 
 func (s *lockV1ManagerServer) Close(ctx context.Context, request *lockv1.CloseRequest) (*lockv1.CloseResponse, error) {
-	namespace, err := s.proxies.GetNamespace(ctx, request.Cluster.Name)
+	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.Proto(err)
 	}

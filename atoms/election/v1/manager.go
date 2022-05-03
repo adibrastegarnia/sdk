@@ -22,7 +22,7 @@ type leaderElectionV1ManagerServer struct {
 }
 
 func (s *leaderElectionV1ManagerServer) Create(ctx context.Context, request *electionv1.CreateRequest) (*electionv1.CreateResponse, error) {
-	namespace, err := s.proxies.GetNamespace(ctx, request.Cluster.Name)
+	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.Proto(err)
 	}
@@ -34,7 +34,7 @@ func (s *leaderElectionV1ManagerServer) Create(ctx context.Context, request *ele
 }
 
 func (s *leaderElectionV1ManagerServer) Close(ctx context.Context, request *electionv1.CloseRequest) (*electionv1.CloseResponse, error) {
-	namespace, err := s.proxies.GetNamespace(ctx, request.Cluster.Name)
+	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.Proto(err)
 	}
