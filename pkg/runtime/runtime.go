@@ -16,7 +16,9 @@ import (
 
 var log = logging.GetLogger()
 
-func New(options Options) *Runtime {
+func New(opts ...Option) *Runtime {
+	var options Options
+	options.apply(opts...)
 	return &Runtime{
 		Options: options,
 		conns:   make(map[string]driver.Conn),
