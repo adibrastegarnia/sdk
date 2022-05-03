@@ -7,9 +7,6 @@
 build:
 	go build ./...
 
-release:
-	goreleaser release
-
 api: build
 	@cd api && (rm -r **/*.pb.go **/*.md || true) && cd ..
 	docker run -it -v `pwd`:/build \
