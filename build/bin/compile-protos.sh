@@ -14,6 +14,18 @@ go_import_paths="${go_import_paths},Matomix/atom/meta/v1/object.proto=github.com
 go_import_paths="${go_import_paths},Matomix/atom/meta/v1/timestamp.proto=github.com/atomix/runtime-api/api/atomix/atom/meta/v1"
 
 protoc -I=$proto_path \
+  --doc_out=api/atomix/runtime/v1 \
+  --doc_opt=markdown,controller.md \
+  --gogofaster_out=$go_import_paths,import_path=github.com/atomix/runtime-api/api/atomix/runtime/v1,plugins=grpc:api \
+  api/atomix/runtime/v1/controller.proto
+
+protoc -I=$proto_path \
+  --doc_out=api/atomix/runtime/v1 \
+  --doc_opt=markdown,registry.md \
+  --gogofaster_out=$go_import_paths,import_path=github.com/atomix/runtime-api/api/atomix/runtime/v1,plugins=grpc:api \
+  api/atomix/runtime/v1/registry.proto
+
+protoc -I=$proto_path \
   --doc_out=api/atomix/atom/v1 \
   --doc_opt=markdown,descriptor.md \
   --gogofaster_out=$go_import_paths,import_path=github.com/atomix/runtime-api/api/atomix/atom/v1,plugins=grpc:api \

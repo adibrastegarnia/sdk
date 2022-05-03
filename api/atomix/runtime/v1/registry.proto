@@ -1,0 +1,53 @@
+/*
+SPDX-FileCopyrightText: 2022-present Open Networking Foundation <info@opennetworking.org>
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
+syntax = "proto3";
+
+package atomix.runtime.v1;
+
+import "gogoproto/gogo.proto";
+
+// The registry service provides control functions for the runtime.
+service Registry {
+    rpc PushDriver(stream PushDriverRequest) returns (PushDriverResponse);
+    rpc PullDriver(PullDriverRequest) returns (stream PullDriverResponse);
+}
+
+message DriverInfo {
+    string name = 1;
+    string version = 2;
+}
+
+message RuntimeInfo {
+    string version = 1;
+}
+
+message PullDriverRequest {
+    DriverInfo driver = 1 [
+        (gogoproto.nullable) = false
+    ];
+    RuntimeInfo runtime = 2 [
+        (gogoproto.nullable) = false
+    ];
+}
+
+message PullDriverResponse {
+    bytes data = 1;
+}
+
+message PushDriverRequest {
+    DriverInfo driver = 1 [
+        (gogoproto.nullable) = false
+    ];
+    RuntimeInfo runtime = 2 [
+        (gogoproto.nullable) = false
+    ];
+    bytes data = 3;
+}
+
+message PushDriverResponse {
+
+}
