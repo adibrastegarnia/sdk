@@ -24,11 +24,11 @@ type setV1ManagerServer struct {
 func (s *setV1ManagerServer) Create(ctx context.Context, request *setv1.CreateRequest) (*setv1.CreateResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
-		return nil, errors.Proto(err)
+		return nil, errors.ToProto(err)
 	}
 	err = namespace.CreateProxy(ctx, request.Headers.Primitive.Name)
 	if err != nil {
-		return nil, errors.Proto(err)
+		return nil, errors.ToProto(err)
 	}
 	return &setv1.CreateResponse{}, nil
 }
@@ -36,11 +36,11 @@ func (s *setV1ManagerServer) Create(ctx context.Context, request *setv1.CreateRe
 func (s *setV1ManagerServer) Close(ctx context.Context, request *setv1.CloseRequest) (*setv1.CloseResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
-		return nil, errors.Proto(err)
+		return nil, errors.ToProto(err)
 	}
 	err = namespace.CloseProxy(ctx, request.Headers.Primitive.Name)
 	if err != nil {
-		return nil, errors.Proto(err)
+		return nil, errors.ToProto(err)
 	}
 	return &setv1.CloseResponse{}, nil
 }

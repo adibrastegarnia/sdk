@@ -155,7 +155,7 @@ func (p *Plugin) Push(ctx context.Context) error {
 
 	stream, err := client.PushDriver(ctx)
 	if err != nil {
-		return errors.From(err)
+		return errors.FromProto(err)
 	}
 
 	request := &runtimev1.PushDriverRequest{
@@ -172,7 +172,7 @@ func (p *Plugin) Push(ctx context.Context) error {
 		},
 	}
 	if err := stream.Send(request); err != nil {
-		return errors.From(err)
+		return errors.FromProto(err)
 	}
 
 	sha := sha256.New()
@@ -189,7 +189,7 @@ func (p *Plugin) Push(ctx context.Context) error {
 				},
 			}
 			if err := stream.Send(request); err != nil {
-				return errors.From(err)
+				return errors.FromProto(err)
 			}
 			return nil
 		}
@@ -205,7 +205,7 @@ func (p *Plugin) Push(ctx context.Context) error {
 			},
 		}
 		if err := stream.Send(request); err != nil {
-			return errors.From(err)
+			return errors.FromProto(err)
 		}
 
 		_, err = sha.Write(buf[:i+1])
@@ -230,7 +230,7 @@ func (p *Plugin) Pull(ctx context.Context) error {
 	}
 	stream, err := client.PullDriver(ctx, request)
 	if err != nil {
-		return errors.From(err)
+		return errors.FromProto(err)
 	}
 
 	writer, err := os.Create(p.Path)
@@ -244,7 +244,7 @@ func (p *Plugin) Pull(ctx context.Context) error {
 		if err != nil {
 			_ = writer.Close()
 			_ = os.Remove(p.Path)
-			return errors.From(err)
+			return errors.FromProto(err)
 		}
 
 		switch r := response.Response.(type) {

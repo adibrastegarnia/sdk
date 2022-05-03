@@ -55,7 +55,7 @@ func (c *Client) GetCluster(ctx context.Context, name string) (runtimev1.Cluster
 	}
 	response, err := client.GetCluster(ctx, request)
 	if err != nil {
-		return runtimev1.Cluster{}, errors.From(err)
+		return runtimev1.Cluster{}, errors.FromProto(err)
 	}
 	return response.Cluster, nil
 }
@@ -68,7 +68,7 @@ func (c *Client) WatchCluster(ctx context.Context, name string, ch chan<- runtim
 	}
 	stream, err := client.ListClusters(ctx, request)
 	if err != nil {
-		return errors.From(err)
+		return errors.FromProto(err)
 	}
 	go func() {
 		defer close(ch)

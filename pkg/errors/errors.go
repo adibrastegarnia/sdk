@@ -57,8 +57,8 @@ func (e *TypedError) Error() string {
 
 var _ error = &TypedError{}
 
-// From returns the given gRPC error as an Atomix error
-func From(err error) error {
+// FromProto returns the given gRPC error as an Atomix error
+func FromProto(err error) error {
 	if err == nil {
 		return nil
 	}
@@ -111,8 +111,8 @@ func From(err error) error {
 	}
 }
 
-// Proto returns the given error as a gRPC error
-func Proto(err error) error {
+// ToProto returns the given error as a gRPC error
+func ToProto(err error) error {
 	if err == nil {
 		return nil
 	}

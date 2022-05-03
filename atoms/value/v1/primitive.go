@@ -24,7 +24,7 @@ type valueV1Server struct {
 func (s *valueV1Server) Set(ctx context.Context, request *valuev1.SetRequest) (*valuev1.SetResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return nil, errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.Set(ctx, request)
 }
@@ -32,7 +32,7 @@ func (s *valueV1Server) Set(ctx context.Context, request *valuev1.SetRequest) (*
 func (s *valueV1Server) Get(ctx context.Context, request *valuev1.GetRequest) (*valuev1.GetResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return nil, errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.Get(ctx, request)
 }
@@ -40,7 +40,7 @@ func (s *valueV1Server) Get(ctx context.Context, request *valuev1.GetRequest) (*
 func (s *valueV1Server) Events(request *valuev1.EventsRequest, server valuev1.Value_EventsServer) error {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.Events(request, server)
 }

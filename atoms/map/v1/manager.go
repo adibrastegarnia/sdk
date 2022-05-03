@@ -24,11 +24,11 @@ type mapV1ManagerServer struct {
 func (s *mapV1ManagerServer) Create(ctx context.Context, request *mapv1.CreateRequest) (*mapv1.CreateResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
-		return nil, errors.Proto(err)
+		return nil, errors.ToProto(err)
 	}
 	err = namespace.CreateProxy(ctx, request.Headers.Primitive.Name)
 	if err != nil {
-		return nil, errors.Proto(err)
+		return nil, errors.ToProto(err)
 	}
 	return &mapv1.CreateResponse{}, nil
 }
@@ -36,11 +36,11 @@ func (s *mapV1ManagerServer) Create(ctx context.Context, request *mapv1.CreateRe
 func (s *mapV1ManagerServer) Close(ctx context.Context, request *mapv1.CloseRequest) (*mapv1.CloseResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
-		return nil, errors.Proto(err)
+		return nil, errors.ToProto(err)
 	}
 	err = namespace.CloseProxy(ctx, request.Headers.Primitive.Name)
 	if err != nil {
-		return nil, errors.Proto(err)
+		return nil, errors.ToProto(err)
 	}
 	return &mapv1.CloseResponse{}, nil
 }

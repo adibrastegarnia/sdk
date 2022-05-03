@@ -35,12 +35,12 @@ func (s *Server) PushDriver(stream runtimev1.Registry_PushDriverServer) error {
 	case *runtimev1.PushDriverRequest_Header:
 		writer, err = s.registry.Create(r.Header.Driver.Name, r.Header.Driver.Version, r.Header.Runtime.Version)
 		if err != nil {
-			return errors.Proto(errors.NewInternal(err.Error()))
+			return errors.ToProto(errors.NewInternal(err.Error()))
 		}
 	case *runtimev1.PushDriverRequest_Chunk:
-		return errors.Proto(errors.NewForbidden("received Chunk request; expected Header"))
+		return errors.ToProto(errors.NewForbidden("received Chunk request; expected Header"))
 	case *runtimev1.PushDriverRequest_Trailer:
-		return errors.Proto(errors.NewForbidden("received Trailer request; expected Header"))
+		return errors.ToProto(errors.NewForbidden("received Trailer request; expected Header"))
 	}
 
 	sha := sha256.New()
@@ -56,21 +56,21 @@ func (s *Server) PushDriver(stream runtimev1.Registry_PushDriverServer) error {
 
 		switch r := request.Request.(type) {
 		case *runtimev1.PushDriverRequest_Header:
-			return errors.Proto(errors.NewForbidden("received Chunk request; expected Chunk or Trailer"))
+			return errors.ToProto(errors.NewForbidden("received Chunk request; expected Chunk or Trailer"))
 		case *runtimev1.PushDriverRequest_Chunk:
 			_, err = writer.Write(r.Chunk.Data)
 			if err != nil {
-				return errors.Proto(errors.NewInternal(err.Error()))
+				return errors.ToProto(errors.NewInternal(err.Error()))
 			}
 
 			_, err = sha.Write(r.Chunk.Data)
 			if err != nil {
-				return errors.Proto(errors.NewInternal(err.Error()))
+				return errors.ToProto(errors.NewInternal(err.Error()))
 			}
 		case *runtimev1.PushDriverRequest_Trailer:
 			checksum := hex.EncodeToString(sha.Sum(nil))
 			if r.Trailer.Checksum != checksum {
-				return errors.Proto(errors.NewFault(""))
+				return errors.ToProto(errors.NewFault(""))
 			}
 			return nil
 		}
@@ -80,7 +80,7 @@ func (s *Server) PushDriver(stream runtimev1.Registry_PushDriverServer) error {
 func (s *Server) PullDriver(request *runtimev1.PullDriverRequest, stream runtimev1.Registry_PullDriverServer) error {
 	reader, err := s.registry.Open(request.Header.Driver.Name, request.Header.Driver.Version, request.Header.Runtime.Version)
 	if err != nil {
-		return errors.Proto(errors.NewInternal(err.Error()))
+		return errors.ToProto(errors.NewInternal(err.Error()))
 	}
 	defer reader.Close()
 
@@ -119,7 +119,7 @@ func (s *Server) PullDriver(request *runtimev1.PullDriverRequest, stream runtime
 
 		_, err = sha.Write(buf[:i+1])
 		if err != nil {
-			return errors.Proto(errors.NewInternal(err.Error()))
+			return errors.ToProto(errors.NewInternal(err.Error()))
 		}
 	}
 }

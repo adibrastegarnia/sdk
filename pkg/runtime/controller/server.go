@@ -25,7 +25,7 @@ func (s *Server) GetCluster(ctx context.Context, request *runtimev1.GetClusterRe
 	log.Debugw("GetCluster", logging.Stringer("GetClusterRequest", request))
 	cluster, err := s.controller.GetCluster(ctx, request.Name, GetClusterOptions{})
 	if err != nil {
-		return nil, errors.Proto(err)
+		return nil, errors.ToProto(err)
 	}
 
 	response := &runtimev1.GetClusterResponse{
@@ -44,7 +44,7 @@ func (s *Server) ListClusters(request *runtimev1.ListClustersRequest, server run
 	ch := make(chan runtimev1.Cluster)
 	err := s.controller.ListClusters(server.Context(), ch, options)
 	if err != nil {
-		return errors.Proto(err)
+		return errors.ToProto(err)
 	}
 
 	for cluster := range ch {

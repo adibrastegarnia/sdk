@@ -24,7 +24,7 @@ type lockV1Server struct {
 func (s *lockV1Server) Lock(ctx context.Context, request *lockv1.LockRequest) (*lockv1.LockResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return nil, errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.Lock(ctx, request)
 }
@@ -32,7 +32,7 @@ func (s *lockV1Server) Lock(ctx context.Context, request *lockv1.LockRequest) (*
 func (s *lockV1Server) Unlock(ctx context.Context, request *lockv1.UnlockRequest) (*lockv1.UnlockResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return nil, errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.Unlock(ctx, request)
 }
@@ -40,7 +40,7 @@ func (s *lockV1Server) Unlock(ctx context.Context, request *lockv1.UnlockRequest
 func (s *lockV1Server) GetLock(ctx context.Context, request *lockv1.GetLockRequest) (*lockv1.GetLockResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return nil, errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.GetLock(ctx, request)
 }

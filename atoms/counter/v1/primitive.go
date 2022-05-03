@@ -24,7 +24,7 @@ type counterV1Server struct {
 func (s *counterV1Server) Set(ctx context.Context, request *counterv1.SetRequest) (*counterv1.SetResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return nil, errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.Set(ctx, request)
 }
@@ -32,7 +32,7 @@ func (s *counterV1Server) Set(ctx context.Context, request *counterv1.SetRequest
 func (s *counterV1Server) Get(ctx context.Context, request *counterv1.GetRequest) (*counterv1.GetResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return nil, errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.Get(ctx, request)
 }
@@ -40,7 +40,7 @@ func (s *counterV1Server) Get(ctx context.Context, request *counterv1.GetRequest
 func (s *counterV1Server) Increment(ctx context.Context, request *counterv1.IncrementRequest) (*counterv1.IncrementResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return nil, errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.Increment(ctx, request)
 }
@@ -48,7 +48,7 @@ func (s *counterV1Server) Increment(ctx context.Context, request *counterv1.Incr
 func (s *counterV1Server) Decrement(ctx context.Context, request *counterv1.DecrementRequest) (*counterv1.DecrementResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return nil, errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.Decrement(ctx, request)
 }

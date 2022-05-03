@@ -24,7 +24,7 @@ type topicV1Server struct {
 func (s *topicV1Server) Publish(ctx context.Context, request *topicv1.PublishRequest) (*topicv1.PublishResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return nil, errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.Publish(ctx, request)
 }
@@ -32,7 +32,7 @@ func (s *topicV1Server) Publish(ctx context.Context, request *topicv1.PublishReq
 func (s *topicV1Server) Subscribe(request *topicv1.SubscribeRequest, server topicv1.Topic_SubscribeServer) error {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
-		return errors.Proto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
+		return errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
 	}
 	return proxy.Subscribe(request, server)
 }
