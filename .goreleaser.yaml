@@ -27,6 +27,6 @@ dockers:
     ids:
       - atomix-proto-build
     image_templates:
-      - atomix/proto-build:latest
-      - atomix/proto-build:{{ .Tag }}
-      - atomix/proto-build:v{{ .Major }}.{{ .Minor }}
+      - "atomix/proto-build:latest"
+      - "{{ if (not .IsSnapshot) }}atomix/proto-build:{{ .Tag }}{{ end }}"
+      - "{{ if (not .IsSnapshot) }}atomix/proto-build:v{{ .Major }}.{{ .Minor }}{{ end }}"
