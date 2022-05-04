@@ -13,11 +13,7 @@ type Driver interface {
 	Connect(ctx context.Context, config []byte) (Conn, error)
 }
 
-func NewDriver[C config.Config](connector Connector[C], codec config.Codec[C]) Driver {
-	return newConfigurableDriver[C](connector, codec)
-}
-
-func newConfigurableDriver[C config.Config](connector Connector[C], codec config.Codec[C]) Driver {
+func New[C config.Config](connector Connector[C], codec config.Codec[C]) Driver {
 	return &configurableDriver[C]{
 		connector: connector,
 		codec:     codec,
