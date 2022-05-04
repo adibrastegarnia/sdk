@@ -2,14 +2,30 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-project_name: kubernetes-runtime
+project_name: atomix-runtime-api
 
 builds:
-  - skip: true
+  - id: atomix-proto-build
+    main: ./cmd/atomix-proto-build
+    binary: atomix-proto-build
+    goos:
+      - linux
+    goarch:
+      - amd64
+    env:
+      - CC=gcc
+      - CXX=g++
+    flags:
+      - -mod=readonly
+      - -trimpath
+    gcflags:
+      - all=-N -l
 
 dockers:
   - id: proto-build
     dockerfile: build/docker/proto-build.Dockerfile
+    ids:
+      - atomix-proto-build
     image_templates:
       - atomix/proto-build:latest
       - atomix/proto-build:{{ .Tag }}

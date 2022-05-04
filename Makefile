@@ -12,11 +12,19 @@ build:
 release:
 	goreleaser release --rm-dist
 
-api: build
-	@cd api && (rm -r **/*.pb.go **/*.md || true) && cd ..
+api-go:
+	@cd api && (rm -r **/*.pb.go || true) && cd ..
 	docker run -it -v `pwd`:/build \
-		--entrypoint build/bin/compile-protos.sh \
-		atomix/proto-build:latest
+		atomix/proto-build:latest \
+		go --package github.com/atomix/runtime-api/api ./api
+
+api-docs:
+	@cd api && (rm -r **/*.md || true) && cd ..
+	docker run -it -v `pwd`:/build \
+		atomix/proto-build:latest \
+		docs ./api
+
+api: api-go api-docs
 
 reuse-tool: # @HELP install reuse if not present
 	command -v reuse || python3 -m pip install reuse

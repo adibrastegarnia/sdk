@@ -42,6 +42,8 @@ RUN mkdir -p /go/src/github.com/google && \
     mv protoc-gen-grpc-web-1.2.1-linux-x86_64 /usr/local/bin/protoc-gen-grpc-web && \
     chmod +x /usr/local/bin/protoc-gen-grpc-web
 
+COPY atomix-proto-build /usr/local/bin/atomix-proto-build
+
 WORKDIR /build
 
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["atomix-proto-build"]

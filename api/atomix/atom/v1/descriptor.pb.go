@@ -6,7 +6,7 @@ package v1
 import (
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	descriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
+	descriptorpb "google.golang.org/protobuf/types/descriptorpb"
 	math "math"
 )
 
@@ -114,7 +114,7 @@ func (OperationType) EnumDescriptor() ([]byte, []int) {
 }
 
 var E_PrimitiveType = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.ServiceOptions)(nil),
+	ExtendedType:  (*descriptorpb.ServiceOptions)(nil),
 	ExtensionType: (*string)(nil),
 	Field:         50000,
 	Name:          "atomix.atom.v1.primitive_type",
@@ -123,7 +123,7 @@ var E_PrimitiveType = &proto.ExtensionDesc{
 }
 
 var E_ServiceType = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.ServiceOptions)(nil),
+	ExtendedType:  (*descriptorpb.ServiceOptions)(nil),
 	ExtensionType: (*ServiceType)(nil),
 	Field:         50001,
 	Name:          "atomix.atom.v1.service_type",
@@ -132,7 +132,7 @@ var E_ServiceType = &proto.ExtensionDesc{
 }
 
 var E_Partitioned = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.ServiceOptions)(nil),
+	ExtendedType:  (*descriptorpb.ServiceOptions)(nil),
 	ExtensionType: (*bool)(nil),
 	Field:         50002,
 	Name:          "atomix.atom.v1.partitioned",
@@ -141,7 +141,7 @@ var E_Partitioned = &proto.ExtensionDesc{
 }
 
 var E_PartitionStrategy = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.MethodOptions)(nil),
+	ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 	ExtensionType: (*PartitionStrategy)(nil),
 	Field:         51000,
 	Name:          "atomix.atom.v1.partition_strategy",
@@ -150,7 +150,7 @@ var E_PartitionStrategy = &proto.ExtensionDesc{
 }
 
 var E_Headers = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.FieldOptions)(nil),
+	ExtendedType:  (*descriptorpb.FieldOptions)(nil),
 	ExtensionType: (*bool)(nil),
 	Field:         52000,
 	Name:          "atomix.atom.v1.headers",
@@ -159,7 +159,7 @@ var E_Headers = &proto.ExtensionDesc{
 }
 
 var E_Input = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.FieldOptions)(nil),
+	ExtendedType:  (*descriptorpb.FieldOptions)(nil),
 	ExtensionType: (*bool)(nil),
 	Field:         52001,
 	Name:          "atomix.atom.v1.input",
@@ -168,7 +168,7 @@ var E_Input = &proto.ExtensionDesc{
 }
 
 var E_Output = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.FieldOptions)(nil),
+	ExtendedType:  (*descriptorpb.FieldOptions)(nil),
 	ExtensionType: (*bool)(nil),
 	Field:         52002,
 	Name:          "atomix.atom.v1.output",
@@ -177,7 +177,7 @@ var E_Output = &proto.ExtensionDesc{
 }
 
 var E_PartitionKey = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.FieldOptions)(nil),
+	ExtendedType:  (*descriptorpb.FieldOptions)(nil),
 	ExtensionType: (*bool)(nil),
 	Field:         52003,
 	Name:          "atomix.atom.v1.partition_key",
@@ -186,7 +186,7 @@ var E_PartitionKey = &proto.ExtensionDesc{
 }
 
 var E_PartitionRange = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.FieldOptions)(nil),
+	ExtendedType:  (*descriptorpb.FieldOptions)(nil),
 	ExtensionType: (*bool)(nil),
 	Field:         52004,
 	Name:          "atomix.atom.v1.partition_range",
@@ -195,7 +195,7 @@ var E_PartitionRange = &proto.ExtensionDesc{
 }
 
 var E_OperationName = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.MethodOptions)(nil),
+	ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 	ExtensionType: (*string)(nil),
 	Field:         52000,
 	Name:          "atomix.atom.v1.operation_name",
@@ -204,7 +204,7 @@ var E_OperationName = &proto.ExtensionDesc{
 }
 
 var E_OperationType = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.MethodOptions)(nil),
+	ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 	ExtensionType: (*OperationType)(nil),
 	Field:         52001,
 	Name:          "atomix.atom.v1.operation_type",
@@ -213,7 +213,7 @@ var E_OperationType = &proto.ExtensionDesc{
 }
 
 var E_OperationAsync = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.MethodOptions)(nil),
+	ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 	ExtensionType: (*bool)(nil),
 	Field:         52002,
 	Name:          "atomix.atom.v1.operation_async",
@@ -222,7 +222,7 @@ var E_OperationAsync = &proto.ExtensionDesc{
 }
 
 var E_OperationId = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.MethodOptions)(nil),
+	ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 	ExtensionType: (*uint32)(nil),
 	Field:         52003,
 	Name:          "atomix.atom.v1.operation_id",
