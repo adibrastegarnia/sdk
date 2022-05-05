@@ -6,7 +6,7 @@ package driver
 
 import (
 	"context"
-	"github.com/atomix/runtime-api/pkg/config"
+	"github.com/atomix/sdk/pkg/config"
 )
 
 type Driver interface {

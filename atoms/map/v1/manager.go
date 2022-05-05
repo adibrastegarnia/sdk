@@ -6,12 +6,11 @@ package v1
 
 import (
 	"context"
-	mapv1 "github.com/atomix/runtime-api/api/atomix/map/v1"
-	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/errors"
+	"github.com/atomix/sdk/pkg/runtime/atom"
 )
 
-func newMapV1ManagerServer(proxies *atom.Service[Map]) mapv1.MapManagerServer {
+func newMapV1ManagerServer(proxies *atom.Service[Map]) v1.MapManagerServer {
 	return &mapV1ManagerServer{
 		proxies: proxies,
 	}
@@ -21,7 +20,7 @@ type mapV1ManagerServer struct {
 	proxies *atom.Service[Map]
 }
 
-func (s *mapV1ManagerServer) Create(ctx context.Context, request *mapv1.CreateRequest) (*mapv1.CreateResponse, error) {
+func (s *mapV1ManagerServer) Create(ctx context.Context, request *v1.CreateRequest) (*v1.CreateResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
@@ -30,10 +29,10 @@ func (s *mapV1ManagerServer) Create(ctx context.Context, request *mapv1.CreateRe
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	return &mapv1.CreateResponse{}, nil
+	return &v1.CreateResponse{}, nil
 }
 
-func (s *mapV1ManagerServer) Close(ctx context.Context, request *mapv1.CloseRequest) (*mapv1.CloseResponse, error) {
+func (s *mapV1ManagerServer) Close(ctx context.Context, request *v1.CloseRequest) (*v1.CloseResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
@@ -42,7 +41,7 @@ func (s *mapV1ManagerServer) Close(ctx context.Context, request *mapv1.CloseRequ
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	return &mapv1.CloseResponse{}, nil
+	return &v1.CloseResponse{}, nil
 }
 
-var _ mapv1.MapManagerServer = (*mapV1ManagerServer)(nil)
+var _ v1.MapManagerServer = (*mapV1ManagerServer)(nil)

@@ -6,15 +6,15 @@ package v1
 
 import (
 	"context"
-	mapv1 "github.com/atomix/runtime-api/api/atomix/map/v1"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
-	"github.com/atomix/runtime-api/pkg/runtime/driver"
+	"github.com/atomix/api/pkg/atomix/map/v1"
+	"github.com/atomix/sdk/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/runtime/driver"
 	"google.golang.org/grpc"
 )
 
 var Atom = atom.New[Map](clientFactory, func(server *grpc.Server, service *atom.Service[Map], registry *atom.Registry[Map]) {
-	mapv1.RegisterMapManagerServer(server, newMapV1ManagerServer(service))
-	mapv1.RegisterMapServer(server, newMapV1Server(registry))
+	v1.RegisterMapManagerServer(server, newMapV1ManagerServer(service))
+	v1.RegisterMapServer(server, newMapV1Server(registry))
 })
 
 // clientFactory is the map/v1 client factory
@@ -31,5 +31,5 @@ type MapClient interface {
 
 type Map interface {
 	atom.Atom
-	mapv1.MapServer
+	v1.MapServer
 }

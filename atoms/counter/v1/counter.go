@@ -6,15 +6,15 @@ package v1
 
 import (
 	"context"
-	counterv1 "github.com/atomix/runtime-api/api/atomix/counter/v1"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
-	"github.com/atomix/runtime-api/pkg/runtime/driver"
+	"github.com/atomix/api/pkg/atomix/counter/v1"
+	"github.com/atomix/sdk/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/runtime/driver"
 	"google.golang.org/grpc"
 )
 
 var Atom = atom.New[Counter](clientFactory, func(server *grpc.Server, service *atom.Service[Counter], registry *atom.Registry[Counter]) {
-	counterv1.RegisterCounterManagerServer(server, newCounterV1ManagerServer(service))
-	counterv1.RegisterCounterServer(server, newCounterV1Server(registry))
+	v1.RegisterCounterManagerServer(server, newCounterV1ManagerServer(service))
+	v1.RegisterCounterServer(server, newCounterV1Server(registry))
 })
 
 // clientFactory is the counter/v1 client factory
@@ -31,5 +31,5 @@ type CounterClient interface {
 
 type Counter interface {
 	atom.Atom
-	counterv1.CounterServer
+	v1.CounterServer
 }

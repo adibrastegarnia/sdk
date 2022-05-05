@@ -6,12 +6,11 @@ package v1
 
 import (
 	"context"
-	setv1 "github.com/atomix/runtime-api/api/atomix/set/v1"
-	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/errors"
+	"github.com/atomix/sdk/pkg/runtime/atom"
 )
 
-func newSetV1Server(proxies *atom.Registry[Set]) setv1.SetServer {
+func newSetV1Server(proxies *atom.Registry[Set]) v1.SetServer {
 	return &setV1Server{
 		proxies: proxies,
 	}
@@ -21,7 +20,7 @@ type setV1Server struct {
 	proxies *atom.Registry[Set]
 }
 
-func (s *setV1Server) Size(ctx context.Context, request *setv1.SizeRequest) (*setv1.SizeResponse, error) {
+func (s *setV1Server) Size(ctx context.Context, request *v1.SizeRequest) (*v1.SizeResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -29,7 +28,7 @@ func (s *setV1Server) Size(ctx context.Context, request *setv1.SizeRequest) (*se
 	return proxy.Size(ctx, request)
 }
 
-func (s *setV1Server) Contains(ctx context.Context, request *setv1.ContainsRequest) (*setv1.ContainsResponse, error) {
+func (s *setV1Server) Contains(ctx context.Context, request *v1.ContainsRequest) (*v1.ContainsResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -37,7 +36,7 @@ func (s *setV1Server) Contains(ctx context.Context, request *setv1.ContainsReque
 	return proxy.Contains(ctx, request)
 }
 
-func (s *setV1Server) Add(ctx context.Context, request *setv1.AddRequest) (*setv1.AddResponse, error) {
+func (s *setV1Server) Add(ctx context.Context, request *v1.AddRequest) (*v1.AddResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -45,7 +44,7 @@ func (s *setV1Server) Add(ctx context.Context, request *setv1.AddRequest) (*setv
 	return proxy.Add(ctx, request)
 }
 
-func (s *setV1Server) Remove(ctx context.Context, request *setv1.RemoveRequest) (*setv1.RemoveResponse, error) {
+func (s *setV1Server) Remove(ctx context.Context, request *v1.RemoveRequest) (*v1.RemoveResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -53,7 +52,7 @@ func (s *setV1Server) Remove(ctx context.Context, request *setv1.RemoveRequest) 
 	return proxy.Remove(ctx, request)
 }
 
-func (s *setV1Server) Clear(ctx context.Context, request *setv1.ClearRequest) (*setv1.ClearResponse, error) {
+func (s *setV1Server) Clear(ctx context.Context, request *v1.ClearRequest) (*v1.ClearResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -61,7 +60,7 @@ func (s *setV1Server) Clear(ctx context.Context, request *setv1.ClearRequest) (*
 	return proxy.Clear(ctx, request)
 }
 
-func (s *setV1Server) Events(request *setv1.EventsRequest, server setv1.Set_EventsServer) error {
+func (s *setV1Server) Events(request *v1.EventsRequest, server v1.Set_EventsServer) error {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -69,7 +68,7 @@ func (s *setV1Server) Events(request *setv1.EventsRequest, server setv1.Set_Even
 	return proxy.Events(request, server)
 }
 
-func (s *setV1Server) Elements(request *setv1.ElementsRequest, server setv1.Set_ElementsServer) error {
+func (s *setV1Server) Elements(request *v1.ElementsRequest, server v1.Set_ElementsServer) error {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -77,4 +76,4 @@ func (s *setV1Server) Elements(request *setv1.ElementsRequest, server setv1.Set_
 	return proxy.Elements(request, server)
 }
 
-var _ setv1.SetServer = (*setV1Server)(nil)
+var _ v1.SetServer = (*setV1Server)(nil)

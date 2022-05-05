@@ -6,15 +6,15 @@ package v1
 
 import (
 	"context"
-	listv1 "github.com/atomix/runtime-api/api/atomix/list/v1"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
-	"github.com/atomix/runtime-api/pkg/runtime/driver"
+	"github.com/atomix/api/pkg/atomix/list/v1"
+	"github.com/atomix/sdk/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/runtime/driver"
 	"google.golang.org/grpc"
 )
 
 var Atom = atom.New[List](clientFactory, func(server *grpc.Server, service *atom.Service[List], registry *atom.Registry[List]) {
-	listv1.RegisterListManagerServer(server, newListV1ManagerServer(service))
-	listv1.RegisterListServer(server, newListV1Server(registry))
+	v1.RegisterListManagerServer(server, newListV1ManagerServer(service))
+	v1.RegisterListServer(server, newListV1Server(registry))
 })
 
 // clientFactory is the list/v1 client factory
@@ -31,5 +31,5 @@ type ListClient interface {
 
 type List interface {
 	atom.Atom
-	listv1.ListServer
+	v1.ListServer
 }

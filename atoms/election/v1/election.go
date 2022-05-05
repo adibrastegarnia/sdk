@@ -6,15 +6,15 @@ package v1
 
 import (
 	"context"
-	electionv1 "github.com/atomix/runtime-api/api/atomix/election/v1"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
-	"github.com/atomix/runtime-api/pkg/runtime/driver"
+	"github.com/atomix/api/pkg/atomix/election/v1"
+	"github.com/atomix/sdk/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/runtime/driver"
 	"google.golang.org/grpc"
 )
 
 var Atom = atom.New[LeaderElection](clientFactory, func(server *grpc.Server, service *atom.Service[LeaderElection], registry *atom.Registry[LeaderElection]) {
-	electionv1.RegisterLeaderElectionManagerServer(server, newLeaderElectionV1ManagerServer(service))
-	electionv1.RegisterLeaderElectionServer(server, newLeaderElectionV1Server(registry))
+	v1.RegisterLeaderElectionManagerServer(server, newLeaderElectionV1ManagerServer(service))
+	v1.RegisterLeaderElectionServer(server, newLeaderElectionV1Server(registry))
 })
 
 // clientFactory is the election/v1 client factory
@@ -31,5 +31,5 @@ type LeaderElectionClient interface {
 
 type LeaderElection interface {
 	atom.Atom
-	electionv1.LeaderElectionServer
+	v1.LeaderElectionServer
 }

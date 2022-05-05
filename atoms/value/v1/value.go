@@ -6,15 +6,15 @@ package v1
 
 import (
 	"context"
-	valuev1 "github.com/atomix/runtime-api/api/atomix/value/v1"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
-	"github.com/atomix/runtime-api/pkg/runtime/driver"
+	"github.com/atomix/api/pkg/atomix/value/v1"
+	"github.com/atomix/sdk/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/runtime/driver"
 	"google.golang.org/grpc"
 )
 
 var Atom = atom.New[Value](clientFactory, func(server *grpc.Server, service *atom.Service[Value], registry *atom.Registry[Value]) {
-	valuev1.RegisterValueManagerServer(server, newValueV1ManagerServer(service))
-	valuev1.RegisterValueServer(server, newValueV1Server(registry))
+	v1.RegisterValueManagerServer(server, newValueV1ManagerServer(service))
+	v1.RegisterValueServer(server, newValueV1Server(registry))
 })
 
 // clientFactory is the value/v1 client factory
@@ -31,5 +31,5 @@ type ValueClient interface {
 
 type Value interface {
 	atom.Atom
-	valuev1.ValueServer
+	v1.ValueServer
 }

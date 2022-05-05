@@ -6,7 +6,7 @@ package atom
 
 import (
 	"context"
-	"github.com/atomix/runtime-api/pkg/errors"
+	"github.com/atomix/sdk/pkg/errors"
 )
 
 func newCluster[T Atom](proxies *Registry[T], client *Client[T]) *Cluster[T] {

@@ -7,7 +7,6 @@ package controller
 import (
 	"context"
 	"fmt"
-	runtimev1 "github.com/atomix/runtime-api/api/atomix/runtime/v1"
 	"google.golang.org/grpc"
 	"net"
 )
@@ -20,15 +19,15 @@ type ListClustersOptions struct {
 }
 
 type Controller interface {
-	GetCluster(ctx context.Context, name string, options GetClusterOptions) (runtimev1.Cluster, error)
-	ListClusters(ctx context.Context, ch chan<- runtimev1.Cluster, options ListClustersOptions) error
+	GetCluster(ctx context.Context, name string, options GetClusterOptions) (v1.Cluster, error)
+	ListClusters(ctx context.Context, ch chan<- v1.Cluster, options ListClustersOptions) error
 }
 
 func NewService(controller Controller, opts ...Option) *Service {
 	var options Options
 	options.apply(opts...)
 	server := grpc.NewServer()
-	runtimev1.RegisterControllerServer(server, newServer(controller))
+	v1.RegisterControllerServer(server, newServer(controller))
 	return &Service{
 		Options: options,
 		server:  server,

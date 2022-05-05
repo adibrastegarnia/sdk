@@ -6,12 +6,11 @@ package v1
 
 import (
 	"context"
-	indexed_mapv1 "github.com/atomix/runtime-api/api/atomix/indexed_map/v1"
-	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/errors"
+	"github.com/atomix/sdk/pkg/runtime/atom"
 )
 
-func newIndexedMapV1ManagerServer(proxies *atom.Service[IndexedMap]) indexed_mapv1.IndexedMapManagerServer {
+func newIndexedMapV1ManagerServer(proxies *atom.Service[IndexedMap]) v1.IndexedMapManagerServer {
 	return &indexedMapV1ManagerServer{
 		proxies: proxies,
 	}
@@ -21,7 +20,7 @@ type indexedMapV1ManagerServer struct {
 	proxies *atom.Service[IndexedMap]
 }
 
-func (s *indexedMapV1ManagerServer) Create(ctx context.Context, request *indexed_mapv1.CreateRequest) (*indexed_mapv1.CreateResponse, error) {
+func (s *indexedMapV1ManagerServer) Create(ctx context.Context, request *v1.CreateRequest) (*v1.CreateResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
@@ -30,10 +29,10 @@ func (s *indexedMapV1ManagerServer) Create(ctx context.Context, request *indexed
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	return &indexed_mapv1.CreateResponse{}, nil
+	return &v1.CreateResponse{}, nil
 }
 
-func (s *indexedMapV1ManagerServer) Close(ctx context.Context, request *indexed_mapv1.CloseRequest) (*indexed_mapv1.CloseResponse, error) {
+func (s *indexedMapV1ManagerServer) Close(ctx context.Context, request *v1.CloseRequest) (*v1.CloseResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
@@ -42,7 +41,7 @@ func (s *indexedMapV1ManagerServer) Close(ctx context.Context, request *indexed_
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	return &indexed_mapv1.CloseResponse{}, nil
+	return &v1.CloseResponse{}, nil
 }
 
-var _ indexed_mapv1.IndexedMapManagerServer = (*indexedMapV1ManagerServer)(nil)
+var _ v1.IndexedMapManagerServer = (*indexedMapV1ManagerServer)(nil)

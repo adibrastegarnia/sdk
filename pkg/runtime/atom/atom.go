@@ -6,7 +6,7 @@ package atom
 
 import (
 	"context"
-	"github.com/atomix/runtime-api/pkg/runtime/driver"
+	"github.com/atomix/sdk/pkg/runtime/driver"
 	"google.golang.org/grpc"
 )
 

@@ -8,7 +8,7 @@ import (
 	"bufio"
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/atomix/runtime-api/pkg/errors"
+	"github.com/atomix/sdk/pkg/errors"
 	"io"
 	"net/http"
 	"os"

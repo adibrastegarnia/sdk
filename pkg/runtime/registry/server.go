@@ -7,8 +7,7 @@ package registry
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	runtimev1 "github.com/atomix/runtime-api/api/atomix/runtime/v1"
-	"github.com/atomix/runtime-api/pkg/errors"
+	"github.com/atomix/sdk/pkg/errors"
 	"io"
 )
 
@@ -24,7 +23,7 @@ type Server struct {
 	registry *Registry
 }
 
-func (s *Server) PushDriver(stream runtimev1.Registry_PushDriverServer) error {
+func (s *Server) PushDriver(stream v1.Registry_PushDriverServer) error {
 	request, err := stream.Recv()
 	if err != nil {
 		return err
@@ -32,14 +31,14 @@ func (s *Server) PushDriver(stream runtimev1.Registry_PushDriverServer) error {
 
 	var writer io.WriteCloser
 	switch r := request.Request.(type) {
-	case *runtimev1.PushDriverRequest_Header:
+	case *v1.PushDriverRequest_Header:
 		writer, err = s.registry.Create(r.Header.Driver.Name, r.Header.Driver.Version, r.Header.Runtime.Version)
 		if err != nil {
 			return errors.ToProto(errors.NewInternal(err.Error()))
 		}
-	case *runtimev1.PushDriverRequest_Chunk:
+	case *v1.PushDriverRequest_Chunk:
 		return errors.ToProto(errors.NewForbidden("received Chunk request; expected Header"))
-	case *runtimev1.PushDriverRequest_Trailer:
+	case *v1.PushDriverRequest_Trailer:
 		return errors.ToProto(errors.NewForbidden("received Trailer request; expected Header"))
 	}
 
@@ -55,9 +54,9 @@ func (s *Server) PushDriver(stream runtimev1.Registry_PushDriverServer) error {
 		}
 
 		switch r := request.Request.(type) {
-		case *runtimev1.PushDriverRequest_Header:
+		case *v1.PushDriverRequest_Header:
 			return errors.ToProto(errors.NewForbidden("received Chunk request; expected Chunk or Trailer"))
-		case *runtimev1.PushDriverRequest_Chunk:
+		case *v1.PushDriverRequest_Chunk:
 			_, err = writer.Write(r.Chunk.Data)
 			if err != nil {
 				return errors.ToProto(errors.NewInternal(err.Error()))
@@ -67,7 +66,7 @@ func (s *Server) PushDriver(stream runtimev1.Registry_PushDriverServer) error {
 			if err != nil {
 				return errors.ToProto(errors.NewInternal(err.Error()))
 			}
-		case *runtimev1.PushDriverRequest_Trailer:
+		case *v1.PushDriverRequest_Trailer:
 			checksum := hex.EncodeToString(sha.Sum(nil))
 			if r.Trailer.Checksum != checksum {
 				return errors.ToProto(errors.NewFault(""))
@@ -77,7 +76,7 @@ func (s *Server) PushDriver(stream runtimev1.Registry_PushDriverServer) error {
 	}
 }
 
-func (s *Server) PullDriver(request *runtimev1.PullDriverRequest, stream runtimev1.Registry_PullDriverServer) error {
+func (s *Server) PullDriver(request *v1.PullDriverRequest, stream v1.Registry_PullDriverServer) error {
 	reader, err := s.registry.Open(request.Header.Driver.Name, request.Header.Driver.Version, request.Header.Runtime.Version)
 	if err != nil {
 		return errors.ToProto(errors.NewInternal(err.Error()))
@@ -90,9 +89,9 @@ func (s *Server) PullDriver(request *runtimev1.PullDriverRequest, stream runtime
 		i, err := reader.Read(buf)
 		if err == io.EOF {
 			checksum := hex.EncodeToString(sha.Sum(nil))
-			response := &runtimev1.PullDriverResponse{
-				Response: &runtimev1.PullDriverResponse_Trailer{
-					Trailer: &runtimev1.PluginTrailer{
+			response := &v1.PullDriverResponse{
+				Response: &v1.PullDriverResponse_Trailer{
+					Trailer: &v1.PluginTrailer{
 						Checksum: checksum,
 					},
 				},
@@ -106,9 +105,9 @@ func (s *Server) PullDriver(request *runtimev1.PullDriverRequest, stream runtime
 			return err
 		}
 
-		response := &runtimev1.PullDriverResponse{
-			Response: &runtimev1.PullDriverResponse_Chunk{
-				Chunk: &runtimev1.PluginChunk{
+		response := &v1.PullDriverResponse{
+			Response: &v1.PullDriverResponse_Chunk{
+				Chunk: &v1.PluginChunk{
 					Data: buf[:i+1],
 				},
 			},
@@ -124,4 +123,4 @@ func (s *Server) PullDriver(request *runtimev1.PullDriverRequest, stream runtime
 	}
 }
 
-var _ runtimev1.RegistryServer = (*Server)(nil)
+var _ v1.RegistryServer = (*Server)(nil)

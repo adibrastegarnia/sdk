@@ -6,11 +6,10 @@ package runtime
 
 import (
 	"context"
-	runtimev1 "github.com/atomix/runtime-api/api/atomix/runtime/v1"
-	"github.com/atomix/runtime-api/pkg/logging"
-	"github.com/atomix/runtime-api/pkg/runtime/controller"
-	"github.com/atomix/runtime-api/pkg/runtime/driver"
-	"github.com/atomix/runtime-api/pkg/version"
+	"github.com/atomix/sdk/pkg/logging"
+	"github.com/atomix/sdk/pkg/runtime/controller"
+	"github.com/atomix/sdk/pkg/runtime/driver"
+	"github.com/atomix/sdk/pkg/version"
 	"sync"
 )
 
@@ -72,7 +71,7 @@ func (r *Runtime) connect(ctx context.Context, name string) (driver.Conn, error)
 		return conn, nil
 	}
 
-	watchCh := make(chan runtimev1.Cluster)
+	watchCh := make(chan v1.Cluster)
 	if err := r.controller.WatchCluster(context.Background(), name, watchCh); err != nil {
 		return nil, err
 	}

@@ -6,12 +6,11 @@ package v1
 
 import (
 	"context"
-	lockv1 "github.com/atomix/runtime-api/api/atomix/lock/v1"
-	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/errors"
+	"github.com/atomix/sdk/pkg/runtime/atom"
 )
 
-func newLockV1ManagerServer(proxies *atom.Service[Lock]) lockv1.LockManagerServer {
+func newLockV1ManagerServer(proxies *atom.Service[Lock]) v1.LockManagerServer {
 	return &lockV1ManagerServer{
 		proxies: proxies,
 	}
@@ -21,7 +20,7 @@ type lockV1ManagerServer struct {
 	proxies *atom.Service[Lock]
 }
 
-func (s *lockV1ManagerServer) Create(ctx context.Context, request *lockv1.CreateRequest) (*lockv1.CreateResponse, error) {
+func (s *lockV1ManagerServer) Create(ctx context.Context, request *v1.CreateRequest) (*v1.CreateResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
@@ -30,10 +29,10 @@ func (s *lockV1ManagerServer) Create(ctx context.Context, request *lockv1.Create
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	return &lockv1.CreateResponse{}, nil
+	return &v1.CreateResponse{}, nil
 }
 
-func (s *lockV1ManagerServer) Close(ctx context.Context, request *lockv1.CloseRequest) (*lockv1.CloseResponse, error) {
+func (s *lockV1ManagerServer) Close(ctx context.Context, request *v1.CloseRequest) (*v1.CloseResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
@@ -42,7 +41,7 @@ func (s *lockV1ManagerServer) Close(ctx context.Context, request *lockv1.CloseRe
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	return &lockv1.CloseResponse{}, nil
+	return &v1.CloseResponse{}, nil
 }
 
-var _ lockv1.LockManagerServer = (*lockV1ManagerServer)(nil)
+var _ v1.LockManagerServer = (*lockV1ManagerServer)(nil)

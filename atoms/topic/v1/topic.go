@@ -6,15 +6,15 @@ package v1
 
 import (
 	"context"
-	topicv1 "github.com/atomix/runtime-api/api/atomix/topic/v1"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
-	"github.com/atomix/runtime-api/pkg/runtime/driver"
+	"github.com/atomix/api/pkg/atomix/topic/v1"
+	"github.com/atomix/sdk/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/runtime/driver"
 	"google.golang.org/grpc"
 )
 
 var Atom = atom.New[Topic](clientFactory, func(server *grpc.Server, service *atom.Service[Topic], registry *atom.Registry[Topic]) {
-	topicv1.RegisterTopicManagerServer(server, newTopicV1ManagerServer(service))
-	topicv1.RegisterTopicServer(server, newTopicV1Server(registry))
+	v1.RegisterTopicManagerServer(server, newTopicV1ManagerServer(service))
+	v1.RegisterTopicServer(server, newTopicV1Server(registry))
 })
 
 // clientFactory is the topic/v1 client factory
@@ -31,5 +31,5 @@ type TopicClient interface {
 
 type Topic interface {
 	atom.Atom
-	topicv1.TopicServer
+	v1.TopicServer
 }

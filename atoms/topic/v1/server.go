@@ -6,12 +6,11 @@ package v1
 
 import (
 	"context"
-	topicv1 "github.com/atomix/runtime-api/api/atomix/topic/v1"
-	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/errors"
+	"github.com/atomix/sdk/pkg/runtime/atom"
 )
 
-func newTopicV1Server(proxies *atom.Registry[Topic]) topicv1.TopicServer {
+func newTopicV1Server(proxies *atom.Registry[Topic]) v1.TopicServer {
 	return &topicV1Server{
 		proxies: proxies,
 	}
@@ -21,7 +20,7 @@ type topicV1Server struct {
 	proxies *atom.Registry[Topic]
 }
 
-func (s *topicV1Server) Publish(ctx context.Context, request *topicv1.PublishRequest) (*topicv1.PublishResponse, error) {
+func (s *topicV1Server) Publish(ctx context.Context, request *v1.PublishRequest) (*v1.PublishResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -29,7 +28,7 @@ func (s *topicV1Server) Publish(ctx context.Context, request *topicv1.PublishReq
 	return proxy.Publish(ctx, request)
 }
 
-func (s *topicV1Server) Subscribe(request *topicv1.SubscribeRequest, server topicv1.Topic_SubscribeServer) error {
+func (s *topicV1Server) Subscribe(request *v1.SubscribeRequest, server v1.Topic_SubscribeServer) error {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -37,4 +36,4 @@ func (s *topicV1Server) Subscribe(request *topicv1.SubscribeRequest, server topi
 	return proxy.Subscribe(request, server)
 }
 
-var _ topicv1.TopicServer = (*topicV1Server)(nil)
+var _ v1.TopicServer = (*topicV1Server)(nil)

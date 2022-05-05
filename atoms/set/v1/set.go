@@ -6,15 +6,15 @@ package v1
 
 import (
 	"context"
-	setv1 "github.com/atomix/runtime-api/api/atomix/set/v1"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
-	"github.com/atomix/runtime-api/pkg/runtime/driver"
+	"github.com/atomix/api/pkg/atomix/set/v1"
+	"github.com/atomix/sdk/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/runtime/driver"
 	"google.golang.org/grpc"
 )
 
 var Atom = atom.New[Set](clientFactory, func(server *grpc.Server, service *atom.Service[Set], registry *atom.Registry[Set]) {
-	setv1.RegisterSetManagerServer(server, newSetV1ManagerServer(service))
-	setv1.RegisterSetServer(server, newSetV1Server(registry))
+	v1.RegisterSetManagerServer(server, newSetV1ManagerServer(service))
+	v1.RegisterSetServer(server, newSetV1Server(registry))
 })
 
 // clientFactory is the set/v1 client factory
@@ -31,5 +31,5 @@ type SetClient interface {
 
 type Set interface {
 	atom.Atom
-	setv1.SetServer
+	v1.SetServer
 }

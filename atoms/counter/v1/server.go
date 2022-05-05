@@ -6,12 +6,11 @@ package v1
 
 import (
 	"context"
-	counterv1 "github.com/atomix/runtime-api/api/atomix/counter/v1"
-	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/errors"
+	"github.com/atomix/sdk/pkg/runtime/atom"
 )
 
-func newCounterV1Server(proxies *atom.Registry[Counter]) counterv1.CounterServer {
+func newCounterV1Server(proxies *atom.Registry[Counter]) v1.CounterServer {
 	return &counterV1Server{
 		proxies: proxies,
 	}
@@ -21,7 +20,7 @@ type counterV1Server struct {
 	proxies *atom.Registry[Counter]
 }
 
-func (s *counterV1Server) Set(ctx context.Context, request *counterv1.SetRequest) (*counterv1.SetResponse, error) {
+func (s *counterV1Server) Set(ctx context.Context, request *v1.SetRequest) (*v1.SetResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -29,7 +28,7 @@ func (s *counterV1Server) Set(ctx context.Context, request *counterv1.SetRequest
 	return proxy.Set(ctx, request)
 }
 
-func (s *counterV1Server) Get(ctx context.Context, request *counterv1.GetRequest) (*counterv1.GetResponse, error) {
+func (s *counterV1Server) Get(ctx context.Context, request *v1.GetRequest) (*v1.GetResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -37,7 +36,7 @@ func (s *counterV1Server) Get(ctx context.Context, request *counterv1.GetRequest
 	return proxy.Get(ctx, request)
 }
 
-func (s *counterV1Server) Increment(ctx context.Context, request *counterv1.IncrementRequest) (*counterv1.IncrementResponse, error) {
+func (s *counterV1Server) Increment(ctx context.Context, request *v1.IncrementRequest) (*v1.IncrementResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -45,7 +44,7 @@ func (s *counterV1Server) Increment(ctx context.Context, request *counterv1.Incr
 	return proxy.Increment(ctx, request)
 }
 
-func (s *counterV1Server) Decrement(ctx context.Context, request *counterv1.DecrementRequest) (*counterv1.DecrementResponse, error) {
+func (s *counterV1Server) Decrement(ctx context.Context, request *v1.DecrementRequest) (*v1.DecrementResponse, error) {
 	proxy, ok := s.proxies.GetProxy(request.Headers.Primitive.Name)
 	if !ok {
 		return nil, errors.ToProto(errors.NewForbidden("proxy '%s' not open", request.Headers.Primitive.Name))
@@ -53,4 +52,4 @@ func (s *counterV1Server) Decrement(ctx context.Context, request *counterv1.Decr
 	return proxy.Decrement(ctx, request)
 }
 
-var _ counterv1.CounterServer = (*counterV1Server)(nil)
+var _ v1.CounterServer = (*counterV1Server)(nil)

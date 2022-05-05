@@ -5,7 +5,7 @@
 package registry
 
 import (
-	"github.com/atomix/runtime-api/pkg/logging"
+	"github.com/atomix/sdk/pkg/logging"
 	"io"
 	"path/filepath"
 	"sync"

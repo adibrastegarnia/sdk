@@ -6,12 +6,11 @@ package v1
 
 import (
 	"context"
-	electionv1 "github.com/atomix/runtime-api/api/atomix/election/v1"
-	"github.com/atomix/runtime-api/pkg/errors"
-	"github.com/atomix/runtime-api/pkg/runtime/atom"
+	"github.com/atomix/sdk/pkg/errors"
+	"github.com/atomix/sdk/pkg/runtime/atom"
 )
 
-func newLeaderElectionV1ManagerServer(proxies *atom.Service[LeaderElection]) electionv1.LeaderElectionManagerServer {
+func newLeaderElectionV1ManagerServer(proxies *atom.Service[LeaderElection]) v1.LeaderElectionManagerServer {
 	return &leaderElectionV1ManagerServer{
 		proxies: proxies,
 	}
@@ -21,7 +20,7 @@ type leaderElectionV1ManagerServer struct {
 	proxies *atom.Service[LeaderElection]
 }
 
-func (s *leaderElectionV1ManagerServer) Create(ctx context.Context, request *electionv1.CreateRequest) (*electionv1.CreateResponse, error) {
+func (s *leaderElectionV1ManagerServer) Create(ctx context.Context, request *v1.CreateRequest) (*v1.CreateResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
@@ -30,10 +29,10 @@ func (s *leaderElectionV1ManagerServer) Create(ctx context.Context, request *ele
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	return &electionv1.CreateResponse{}, nil
+	return &v1.CreateResponse{}, nil
 }
 
-func (s *leaderElectionV1ManagerServer) Close(ctx context.Context, request *electionv1.CloseRequest) (*electionv1.CloseResponse, error) {
+func (s *leaderElectionV1ManagerServer) Close(ctx context.Context, request *v1.CloseRequest) (*v1.CloseResponse, error) {
 	namespace, err := s.proxies.GetCluster(ctx, request.Cluster.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
@@ -42,7 +41,7 @@ func (s *leaderElectionV1ManagerServer) Close(ctx context.Context, request *elec
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	return &electionv1.CloseResponse{}, nil
+	return &v1.CloseResponse{}, nil
 }
 
-var _ electionv1.LeaderElectionManagerServer = (*leaderElectionV1ManagerServer)(nil)
+var _ v1.LeaderElectionManagerServer = (*leaderElectionV1ManagerServer)(nil)
