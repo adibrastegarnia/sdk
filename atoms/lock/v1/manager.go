@@ -6,6 +6,7 @@ package v1
 
 import (
 	"context"
+	"github.com/atomix/api/pkg/atomix/lock/v1"
 	"github.com/atomix/sdk/pkg/errors"
 	"github.com/atomix/sdk/pkg/runtime/atom"
 )

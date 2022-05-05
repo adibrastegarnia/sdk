@@ -6,6 +6,7 @@ package registry
 
 import (
 	"fmt"
+	runtimev1 "github.com/atomix/api/pkg/atomix/runtime/v1"
 	"google.golang.org/grpc"
 	"net"
 )
@@ -15,7 +16,7 @@ func NewService(opts ...Option) *Service {
 	options.apply(opts...)
 	server := grpc.NewServer()
 	registry := newRegistry(opts...)
-	v1.RegisterRegistryServer(server, newServer(registry))
+	runtimev1.RegisterRegistryServer(server, newServer(registry))
 	return &Service{
 		ServerOptions: options.Server,
 		server:        server,

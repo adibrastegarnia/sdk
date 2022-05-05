@@ -7,6 +7,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	runtimev1 "github.com/atomix/api/pkg/atomix/runtime/v1"
 	"github.com/atomix/sdk/pkg/errors"
 	"github.com/atomix/sdk/pkg/grpc/retry"
 	"github.com/atomix/sdk/pkg/logging"
@@ -47,21 +48,21 @@ func (c *Client) connect() error {
 	return nil
 }
 
-func (c *Client) GetCluster(ctx context.Context, name string) (v1.Cluster, error) {
-	client := v1.NewControllerClient(c.conn)
-	request := &v1.GetClusterRequest{
+func (c *Client) GetCluster(ctx context.Context, name string) (runtimev1.Cluster, error) {
+	client := runtimev1.NewControllerClient(c.conn)
+	request := &runtimev1.GetClusterRequest{
 		Name: name,
 	}
 	response, err := client.GetCluster(ctx, request)
 	if err != nil {
-		return v1.Cluster{}, errors.FromProto(err)
+		return runtimev1.Cluster{}, errors.FromProto(err)
 	}
 	return response.Cluster, nil
 }
 
-func (c *Client) WatchCluster(ctx context.Context, name string, ch chan<- v1.Cluster) error {
-	client := v1.NewControllerClient(c.conn)
-	request := &v1.ListClustersRequest{
+func (c *Client) WatchCluster(ctx context.Context, name string, ch chan<- runtimev1.Cluster) error {
+	client := runtimev1.NewControllerClient(c.conn)
+	request := &runtimev1.ListClustersRequest{
 		Name:  name,
 		Watch: true,
 	}

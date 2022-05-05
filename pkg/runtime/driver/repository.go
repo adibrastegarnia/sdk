@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	runtimev1 "github.com/atomix/api/pkg/atomix/runtime/v1"
 	"github.com/atomix/sdk/pkg/errors"
 	"github.com/atomix/sdk/pkg/grpc/retry"
 	"google.golang.org/grpc"
@@ -144,7 +145,7 @@ func (p *Plugin) Load() (Driver, error) {
 }
 
 func (p *Plugin) Push(ctx context.Context) error {
-	client := v1.NewRegistryClient(p.repository.conn)
+	client := runtimev1.NewRegistryClient(p.repository.conn)
 
 	reader, err := os.Open(p.Path)
 	if err != nil {
@@ -157,14 +158,14 @@ func (p *Plugin) Push(ctx context.Context) error {
 		return errors.FromProto(err)
 	}
 
-	request := &v1.PushDriverRequest{
-		Request: &v1.PushDriverRequest_Header{
-			Header: &v1.PluginHeader{
-				Driver: v1.DriverInfo{
+	request := &runtimev1.PushDriverRequest{
+		Request: &runtimev1.PushDriverRequest_Header{
+			Header: &runtimev1.PluginHeader{
+				Driver: runtimev1.DriverInfo{
 					Name:    p.Name,
 					Version: p.Version,
 				},
-				Runtime: v1.RuntimeInfo{
+				Runtime: runtimev1.RuntimeInfo{
 					Version: p.APIVersion,
 				},
 			},
@@ -180,9 +181,9 @@ func (p *Plugin) Push(ctx context.Context) error {
 		i, err := reader.Read(buf)
 		if err == io.EOF {
 			checksum := hex.EncodeToString(sha.Sum(nil))
-			request := &v1.PushDriverRequest{
-				Request: &v1.PushDriverRequest_Trailer{
-					Trailer: &v1.PluginTrailer{
+			request := &runtimev1.PushDriverRequest{
+				Request: &runtimev1.PushDriverRequest_Trailer{
+					Trailer: &runtimev1.PluginTrailer{
 						Checksum: checksum,
 					},
 				},
@@ -196,9 +197,9 @@ func (p *Plugin) Push(ctx context.Context) error {
 			return errors.NewInternal(err.Error())
 		}
 
-		request := &v1.PushDriverRequest{
-			Request: &v1.PushDriverRequest_Chunk{
-				Chunk: &v1.PluginChunk{
+		request := &runtimev1.PushDriverRequest{
+			Request: &runtimev1.PushDriverRequest_Chunk{
+				Chunk: &runtimev1.PluginChunk{
 					Data: buf[:i+1],
 				},
 			},
@@ -215,14 +216,14 @@ func (p *Plugin) Push(ctx context.Context) error {
 }
 
 func (p *Plugin) Pull(ctx context.Context) error {
-	client := v1.NewRegistryClient(p.repository.conn)
-	request := &v1.PullDriverRequest{
-		Header: &v1.PluginHeader{
-			Driver: v1.DriverInfo{
+	client := runtimev1.NewRegistryClient(p.repository.conn)
+	request := &runtimev1.PullDriverRequest{
+		Header: &runtimev1.PluginHeader{
+			Driver: runtimev1.DriverInfo{
 				Name:    p.Name,
 				Version: p.Version,
 			},
-			Runtime: v1.RuntimeInfo{
+			Runtime: runtimev1.RuntimeInfo{
 				Version: p.APIVersion,
 			},
 		},
@@ -247,7 +248,7 @@ func (p *Plugin) Pull(ctx context.Context) error {
 		}
 
 		switch r := response.Response.(type) {
-		case *v1.PullDriverResponse_Chunk:
+		case *runtimev1.PullDriverResponse_Chunk:
 			_, err = writer.Write(r.Chunk.Data)
 			if err != nil {
 				_ = writer.Close()
@@ -261,7 +262,7 @@ func (p *Plugin) Pull(ctx context.Context) error {
 				_ = os.Remove(p.Path)
 				return errors.NewInternal(err.Error())
 			}
-		case *v1.PullDriverResponse_Trailer:
+		case *runtimev1.PullDriverResponse_Trailer:
 			err = writer.Close()
 			if err != nil {
 				return errors.NewInternal(err.Error())
