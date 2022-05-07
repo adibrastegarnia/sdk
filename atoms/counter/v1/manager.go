@@ -26,7 +26,7 @@ func (s *counterV1ManagerServer) Create(ctx context.Context, request *v1.CreateR
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	err = namespace.CreateProxy(ctx, request.Headers.Primitive.Name)
+	err = namespace.CreateProxy(ctx, request.Headers.Atom.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
@@ -38,7 +38,7 @@ func (s *counterV1ManagerServer) Close(ctx context.Context, request *v1.CloseReq
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	err = namespace.CloseProxy(ctx, request.Headers.Primitive.Name)
+	err = namespace.CloseProxy(ctx, request.Headers.Atom.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}

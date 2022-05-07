@@ -84,8 +84,8 @@ func (r *Runtime) connect(ctx context.Context, name string) (driver.Conn, error)
 		}
 
 		pluginInfo := driver.PluginInfo{
-			Name:       cluster.Driver,
-			Version:    cluster.Version,
+			Name:       cluster.Driver.Name,
+			Version:    cluster.Driver.Version,
 			APIVersion: version.Version(),
 		}
 		driver, err := r.drivers.Load(ctx, pluginInfo)
@@ -93,14 +93,14 @@ func (r *Runtime) connect(ctx context.Context, name string) (driver.Conn, error)
 			return nil, err
 		}
 
-		conn, err := driver.Connect(ctx, cluster.Data)
+		conn, err := driver.Connect(ctx, cluster.Config)
 		if err != nil {
 			return nil, err
 		}
 
 		go func() {
 			for configuration := range watchCh {
-				if err := conn.Configure(context.Background(), configuration.Data); err != nil {
+				if err := conn.Configure(context.Background(), configuration.Config); err != nil {
 					log.Error(err)
 				}
 			}

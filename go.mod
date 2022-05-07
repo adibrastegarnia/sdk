@@ -3,7 +3,7 @@ module github.com/atomix/sdk
 go 1.18
 
 require (
-	github.com/atomix/api v0.0.0-20220505075216-529093848791
+	github.com/atomix/api v0.0.0-20220506074308-e4e4551768d4
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/golang/protobuf v1.5.2
 	github.com/mitchellh/go-homedir v1.1.0

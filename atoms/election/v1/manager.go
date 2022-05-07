@@ -26,7 +26,7 @@ func (s *leaderElectionV1ManagerServer) Create(ctx context.Context, request *v1.
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	err = namespace.CreateProxy(ctx, request.Headers.Primitive.Name)
+	err = namespace.CreateProxy(ctx, request.Headers.Atom.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
@@ -38,7 +38,7 @@ func (s *leaderElectionV1ManagerServer) Close(ctx context.Context, request *v1.C
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}
-	err = namespace.CloseProxy(ctx, request.Headers.Primitive.Name)
+	err = namespace.CloseProxy(ctx, request.Headers.Atom.Name)
 	if err != nil {
 		return nil, errors.ToProto(err)
 	}

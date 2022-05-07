@@ -161,11 +161,11 @@ func (p *Plugin) Push(ctx context.Context) error {
 	request := &runtimev1.PushDriverRequest{
 		Request: &runtimev1.PushDriverRequest_Header{
 			Header: &runtimev1.PluginHeader{
-				Driver: runtimev1.DriverInfo{
+				Driver: runtimev1.DriverMeta{
 					Name:    p.Name,
 					Version: p.Version,
 				},
-				Runtime: runtimev1.RuntimeInfo{
+				Runtime: runtimev1.RuntimeMeta{
 					Version: p.APIVersion,
 				},
 			},
@@ -219,11 +219,11 @@ func (p *Plugin) Pull(ctx context.Context) error {
 	client := runtimev1.NewRegistryClient(p.repository.conn)
 	request := &runtimev1.PullDriverRequest{
 		Header: &runtimev1.PluginHeader{
-			Driver: runtimev1.DriverInfo{
+			Driver: runtimev1.DriverMeta{
 				Name:    p.Name,
 				Version: p.Version,
 			},
-			Runtime: runtimev1.RuntimeInfo{
+			Runtime: runtimev1.RuntimeMeta{
 				Version: p.APIVersion,
 			},
 		},
