@@ -5,10 +5,10 @@
 .PHONY: build
 
 build:
-	goreleaser release --snapshot --rm-dist
+	go build ./...
 
-release:
-	goreleaser release --rm-dist
+test:
+	go test github.com/atomix/sdk/pkg/...
 
 reuse-tool: # @HELP install reuse if not present
 	command -v reuse || python3 -m pip install reuse
