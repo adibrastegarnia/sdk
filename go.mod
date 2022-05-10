@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/atomix/api v0.0.0-20220509235623-6cfbac037aeb
 	github.com/cenkalti/backoff v2.2.1+incompatible
+	github.com/gofrs/flock v0.8.1
 	github.com/golang/protobuf v1.5.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/viper v1.11.0
