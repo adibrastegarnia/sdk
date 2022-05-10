@@ -7,8 +7,8 @@ package v1
 import (
 	"context"
 	"github.com/atomix/api/pkg/atomix/counter/v1"
+	"github.com/atomix/sdk/pkg/atom"
 	"github.com/atomix/sdk/pkg/errors"
-	"github.com/atomix/sdk/pkg/runtime/atom"
 )
 
 func newCounterV1Server(proxies *atom.Registry[Counter]) v1.CounterServer {

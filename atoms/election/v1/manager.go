@@ -7,8 +7,8 @@ package v1
 import (
 	"context"
 	"github.com/atomix/api/pkg/atomix/election/v1"
+	"github.com/atomix/sdk/pkg/atom"
 	"github.com/atomix/sdk/pkg/errors"
-	"github.com/atomix/sdk/pkg/runtime/atom"
 )
 
 func newLeaderElectionV1ManagerServer(proxies *atom.Service[LeaderElection]) v1.LeaderElectionManagerServer {

@@ -7,8 +7,8 @@ package v1
 import (
 	"context"
 	"github.com/atomix/api/pkg/atomix/indexed_map/v1"
+	"github.com/atomix/sdk/pkg/atom"
 	"github.com/atomix/sdk/pkg/errors"
-	"github.com/atomix/sdk/pkg/runtime/atom"
 )
 
 func newIndexedMapV1Server(proxies *atom.Registry[IndexedMap]) v1.IndexedMapServer {

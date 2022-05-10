@@ -7,8 +7,8 @@ package v1
 import (
 	"context"
 	"github.com/atomix/api/pkg/atomix/topic/v1"
-	"github.com/atomix/sdk/pkg/runtime/atom"
-	"github.com/atomix/sdk/pkg/runtime/driver"
+	"github.com/atomix/sdk/pkg/atom"
+	"github.com/atomix/sdk/pkg/driver"
 	"google.golang.org/grpc"
 )
 

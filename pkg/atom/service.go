@@ -6,8 +6,8 @@ package atom
 
 import (
 	"context"
+	"github.com/atomix/sdk/pkg/driver"
 	"github.com/atomix/sdk/pkg/errors"
-	"github.com/atomix/sdk/pkg/runtime/driver"
 	"sync"
 )
 

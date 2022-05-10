@@ -7,9 +7,9 @@ package runtime
 import (
 	"context"
 	runtimev1 "github.com/atomix/api/pkg/atomix/runtime/v1"
+	"github.com/atomix/sdk/pkg/controller"
+	"github.com/atomix/sdk/pkg/driver"
 	"github.com/atomix/sdk/pkg/logging"
-	"github.com/atomix/sdk/pkg/runtime/controller"
-	"github.com/atomix/sdk/pkg/runtime/driver"
 	"sync"
 )
 

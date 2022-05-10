@@ -7,8 +7,8 @@ package v1
 import (
 	"context"
 	"github.com/atomix/api/pkg/atomix/list/v1"
+	"github.com/atomix/sdk/pkg/atom"
 	"github.com/atomix/sdk/pkg/errors"
-	"github.com/atomix/sdk/pkg/runtime/atom"
 )
 
 func newListV1Server(proxies *atom.Registry[List]) v1.ListServer {

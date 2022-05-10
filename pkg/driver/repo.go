@@ -7,7 +7,7 @@ package driver
 import (
 	"context"
 	"fmt"
-	"github.com/atomix/sdk/pkg/runtime/controller"
+	"github.com/atomix/sdk/pkg/controller"
 	"os"
 	"path/filepath"
 	"plugin"

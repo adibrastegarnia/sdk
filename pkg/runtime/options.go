@@ -5,9 +5,9 @@
 package runtime
 
 import (
-	"github.com/atomix/sdk/pkg/runtime/atom"
-	"github.com/atomix/sdk/pkg/runtime/controller"
-	"github.com/atomix/sdk/pkg/runtime/driver"
+	"github.com/atomix/sdk/pkg/atom"
+	"github.com/atomix/sdk/pkg/controller"
+	"github.com/atomix/sdk/pkg/driver"
 	"google.golang.org/grpc"
 )
 
