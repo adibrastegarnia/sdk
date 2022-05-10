@@ -6,41 +6,84 @@ package runtime
 
 import (
 	"context"
+	"fmt"
 	runtimev1 "github.com/atomix/api/pkg/atomix/runtime/v1"
+	"github.com/atomix/sdk/pkg/atom"
 	"github.com/atomix/sdk/pkg/controller"
 	"github.com/atomix/sdk/pkg/driver"
 	"github.com/atomix/sdk/pkg/logging"
-	"github.com/atomix/sdk/pkg/plugin"
+	"google.golang.org/grpc"
+	"net"
 	"sync"
 )
 
 var log = logging.GetLogger()
 
-func New(opts ...Option) *Runtime {
+func New(controller *controller.Client, atoms *atom.Repository, drivers *driver.Repository, opts ...Option) *Runtime {
 	var options Options
 	options.apply(opts...)
 	return &Runtime{
-		Options: options,
-		conns:   make(map[string]driver.Conn),
+		options:    options,
+		controller: controller,
+		atoms:      atoms,
+		drivers:    drivers,
+		server:     grpc.NewServer(),
+		conns:      make(map[string]driver.Conn),
 	}
 }
 
 type Runtime struct {
-	Options
+	options    Options
 	controller *controller.Client
-	drivers    *plugin.Repository[driver.Driver]
+	atoms      *atom.Repository
+	drivers    *driver.Repository
+	server     *grpc.Server
 	conns      map[string]driver.Conn
 	mu         sync.RWMutex
 }
 
 func (r *Runtime) Run() error {
-	controller, err := controller.NewClient(controller.WithOptions(r.Controller))
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if err := r.registerAtoms(ctx); err != nil {
+		return err
+	}
+
+	address := fmt.Sprintf("%s:%d", r.options.Host, r.options.Port)
+	lis, err := net.Listen("tcp", address)
 	if err != nil {
 		return err
 	}
-	r.controller = controller
-	r.drivers = driver.NewRepository(controller, driver.WithRepoOptions(r.Repository))
+
+	go func() {
+		if err := r.server.Serve(lis); err != nil {
+			panic(err)
+		}
+	}()
 	return nil
+}
+
+func (r *Runtime) registerAtoms(ctx context.Context) error {
+	wg := &sync.WaitGroup{}
+	errCh := make(chan error, len(r.options.Atoms))
+	for _, atom := range r.options.Atoms {
+		wg.Add(1)
+		go func(name, version string) {
+			defer wg.Done()
+			atom, err := r.atoms.Load(ctx, name, version)
+			if err != nil {
+				errCh <- err
+			} else {
+				atom.Register(r.server, r.Connect)
+			}
+		}(atom.Name, atom.Version)
+	}
+
+	go func() {
+		wg.Wait()
+		close(errCh)
+	}()
+	return <-errCh
 }
 
 func (r *Runtime) Connect(ctx context.Context, cluster string) (driver.Conn, error) {

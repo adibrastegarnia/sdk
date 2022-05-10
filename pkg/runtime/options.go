@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2022-present Intel Corporation
+// SPDX-FileCopyrightText: 2022-present Open Networking Foundation <info@opennetworking.org>
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -6,14 +6,12 @@ package runtime
 
 import (
 	"github.com/atomix/sdk/pkg/atom"
-	"github.com/atomix/sdk/pkg/controller"
-	"github.com/atomix/sdk/pkg/driver"
-	"google.golang.org/grpc"
 )
 
 type Options struct {
-	Controller controller.Options `yaml:"controller"`
-	Repository driver.RepoOptions `yaml:"repository"`
+	Host  string
+	Port  int
+	Atoms []AtomOptions
 }
 
 func (o Options) apply(opts ...Option) {
@@ -24,24 +22,9 @@ func (o Options) apply(opts ...Option) {
 
 type Option func(*Options)
 
-type ServiceOptions struct {
-	Server ServerOptions `yaml:"server"`
-	Atoms  []AtomFunc
-}
-
-func (o ServiceOptions) apply(opts ...ServiceOption) {
-	for _, opt := range opts {
-		opt(&o)
-	}
-}
-
-type ServiceOption func(*ServiceOptions)
-
-type AtomFunc func(*grpc.Server, *Runtime)
-
-type ServerOptions struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
+type AtomOptions struct {
+	Name    string
+	Version string
 }
 
 func WithOptions(opts Options) Option {
@@ -50,46 +33,23 @@ func WithOptions(opts Options) Option {
 	}
 }
 
-func WithServiceOptions(opts ServiceOptions) ServiceOption {
-	return func(options *ServiceOptions) {
-		*options = opts
+func WithHost(host string) Option {
+	return func(options *Options) {
+		options.Host = host
 	}
 }
 
-func WithHost(host string) ServiceOption {
-	return func(options *ServiceOptions) {
-		options.Server.Host = host
+func WithPort(port int) Option {
+	return func(options *Options) {
+		options.Port = port
 	}
 }
 
-func WithPort(port int) ServiceOption {
-	return func(options *ServiceOptions) {
-		options.Server.Port = port
-	}
-}
-
-func WithAtom[T atom.Atom](atom *atom.Type[T]) ServiceOption {
-	return func(options *ServiceOptions) {
-		options.Atoms = append(options.Atoms, func(server *grpc.Server, runtime *Runtime) {
-			atom.Register(server, runtime.Connect)
+func WithAtom[T atom.Atom](name, version string) Option {
+	return func(options *Options) {
+		options.Atoms = append(options.Atoms, AtomOptions{
+			Name:    name,
+			Version: version,
 		})
-	}
-}
-
-func WithControllerHost(host string) Option {
-	return func(options *Options) {
-		options.Controller.Host = host
-	}
-}
-
-func WithControllerPort(port int) Option {
-	return func(options *Options) {
-		options.Controller.Port = port
-	}
-}
-
-func WithPlugins(path string) Option {
-	return func(options *Options) {
-		options.Repository.Path = path
 	}
 }

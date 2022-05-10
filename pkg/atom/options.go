@@ -1,28 +1,10 @@
-// SPDX-FileCopyrightText: 2022-present Intel Corporation
+// SPDX-FileCopyrightText: 2022-present Open Networking Foundation <info@opennetworking.org>
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package driver
+package atom
 
 import "github.com/atomix/sdk/pkg/plugin"
-
-type Options struct {
-	Repository RepoOptions `yaml:"repository,omitempty"`
-}
-
-func (o Options) apply(opts ...Option) {
-	for _, opt := range opts {
-		opt(&o)
-	}
-}
-
-type Option func(*Options)
-
-func WithOptions(options Options) Option {
-	return func(opts *Options) {
-		*opts = options
-	}
-}
 
 type RepoOptions struct {
 	Path       string

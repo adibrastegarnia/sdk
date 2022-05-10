@@ -7,26 +7,44 @@ package atom
 import (
 	"context"
 	"github.com/atomix/sdk/pkg/driver"
+	"github.com/atomix/sdk/pkg/plugin"
 	"google.golang.org/grpc"
 )
 
+const pluginSymbol = "Atom"
+
+type Repository = plugin.Repository[Type]
+
+func NewRepository(opts ...RepoOption) *Repository {
+	var options RepoOptions
+	options.apply(opts...)
+	cache := plugin.NewCache(plugin.WithPath(options.Path))
+	return plugin.NewRepository[Type](cache,
+		plugin.WithSymbol(pluginSymbol),
+		plugin.WithDownloader(options.Downloader))
+}
+
 type Registrar[T Atom] func(*grpc.Server, *Service[T], *Registry[T])
 
-func New[T Atom](resolver ClientResolver[T], registrar Registrar[T]) *Type[T] {
-	return &Type[T]{
+func New[T Atom](resolver ClientResolver[T], registrar Registrar[T]) Type {
+	return &atomType[T]{
 		resolver:  resolver,
 		registrar: registrar,
 		registry:  NewRegistry[T](),
 	}
 }
 
-type Type[T Atom] struct {
+type Type interface {
+	Register(server *grpc.Server, connector Connector)
+}
+
+type atomType[T Atom] struct {
 	resolver  ClientResolver[T]
 	registrar Registrar[T]
 	registry  *Registry[T]
 }
 
-func (a *Type[T]) Register(server *grpc.Server, connector Connector) {
+func (a *atomType[T]) Register(server *grpc.Server, connector Connector) {
 	a.registrar(server, NewService[T](connector, a.resolver, a.registry), a.registry)
 }
 

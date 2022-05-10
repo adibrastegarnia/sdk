@@ -17,16 +17,16 @@ func NewRepository[T any](cache *Cache, opts ...RepoOption) *Repository[T] {
 	var options RepoOptions
 	options.apply(opts...)
 	return &Repository[T]{
-		RepoOptions: options,
-		cache:       cache,
-		plugins:     make(map[string]T),
+		options: options,
+		cache:   cache,
+		plugins: make(map[string]T),
 	}
 }
 
 type DownloadFunc func(ctx context.Context, name string, version string, writer io.Writer) error
 
 type Repository[T any] struct {
-	RepoOptions
+	options RepoOptions
 	cache   *Cache
 	plugins map[string]T
 	mu      sync.RWMutex
@@ -60,7 +60,7 @@ func (r *Repository[T]) Load(ctx context.Context, name string, version string) (
 		return t, err
 	}
 
-	symbol, err := plugin.Lookup(r.Symbol)
+	symbol, err := plugin.Lookup(r.options.Symbol)
 	if err != nil {
 		return t, err
 	}
@@ -82,7 +82,7 @@ func (r *Repository[T]) check(ctx context.Context, name string, version string) 
 }
 
 func (r *Repository[T]) download(ctx context.Context, plugin *Plugin) error {
-	downloader := r.Downloader
+	downloader := r.options.Downloader
 	if downloader == nil {
 		return errors.NewNotSupported("plugin repository does not support downloads")
 	}
@@ -90,7 +90,7 @@ func (r *Repository[T]) download(ctx context.Context, plugin *Plugin) error {
 	if err != nil {
 		return err
 	}
-	err = r.Downloader(ctx, plugin.Name, plugin.Version, writer)
+	err = r.options.Downloader(ctx, plugin.Name, plugin.Version, writer)
 	if err != nil {
 		return err
 	}
