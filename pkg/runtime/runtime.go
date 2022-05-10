@@ -10,6 +10,7 @@ import (
 	"github.com/atomix/sdk/pkg/controller"
 	"github.com/atomix/sdk/pkg/driver"
 	"github.com/atomix/sdk/pkg/logging"
+	"github.com/atomix/sdk/pkg/plugin"
 	"sync"
 )
 
@@ -27,7 +28,7 @@ func New(opts ...Option) *Runtime {
 type Runtime struct {
 	Options
 	controller *controller.Client
-	drivers    *driver.Repository
+	drivers    *plugin.Repository[driver.Driver]
 	conns      map[string]driver.Conn
 	mu         sync.RWMutex
 }
@@ -77,7 +78,7 @@ func (r *Runtime) connect(ctx context.Context, name string) (driver.Conn, error)
 			return nil, context.Canceled
 		}
 
-		driver, err := r.drivers.GetDriver(ctx, info.Driver.Name, info.Driver.Version)
+		driver, err := r.drivers.Load(ctx, info.Driver.Name, info.Driver.Version)
 		if err != nil {
 			return nil, err
 		}

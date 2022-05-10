@@ -7,7 +7,16 @@ package driver
 import (
 	"context"
 	"github.com/atomix/sdk/pkg/config"
+	"github.com/atomix/sdk/pkg/controller"
+	"github.com/atomix/sdk/pkg/plugin"
 )
+
+func NewRepository(controller *controller.Client, opts ...RepoOption) *plugin.Repository[Driver] {
+	var options RepoOptions
+	options.apply(opts...)
+	cache := plugin.NewCache(plugin.WithPath(options.Path))
+	return plugin.NewRepository[Driver](cache, plugin.WithDownloader(controller.GetDriver))
+}
 
 type Driver interface {
 	Connect(ctx context.Context, config []byte) (Conn, error)

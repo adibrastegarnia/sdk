@@ -40,7 +40,7 @@ func WithRepoOptions(options RepoOptions) RepoOption {
 	}
 }
 
-func WithRepoPath(path string) RepoOption {
+func WithPath(path string) RepoOption {
 	return func(options *RepoOptions) {
 		options.Path = path
 	}

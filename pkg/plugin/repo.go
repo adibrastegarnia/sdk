@@ -5,11 +5,15 @@
 package plugin
 
 import (
+	"context"
+	"github.com/atomix/sdk/pkg/errors"
+	"io"
+	"os"
 	"plugin"
 	"sync"
 )
 
-func NewRepo[T any](cache *Cache, opts ...RepoOption) *Repository[T] {
+func NewRepository[T any](cache *Cache, opts ...RepoOption) *Repository[T] {
 	var options RepoOptions
 	options.apply(opts...)
 	return &Repository[T]{
@@ -19,6 +23,8 @@ func NewRepo[T any](cache *Cache, opts ...RepoOption) *Repository[T] {
 	}
 }
 
+type DownloadFunc func(ctx context.Context, name string, version string, writer io.Writer) error
+
 type Repository[T any] struct {
 	RepoOptions
 	cache   *Cache
@@ -26,7 +32,7 @@ type Repository[T any] struct {
 	mu      sync.RWMutex
 }
 
-func (r *Repository[T]) Load(name string, version string) (T, error) {
+func (r *Repository[T]) Load(ctx context.Context, name string, version string) (T, error) {
 	var t T
 
 	key := getPluginName(name, version)
@@ -44,7 +50,11 @@ func (r *Repository[T]) Load(name string, version string) (T, error) {
 		return t, nil
 	}
 
-	path := r.cache.Get(name, version).Path
+	path, err := r.check(ctx, name, version)
+	if err != nil {
+		return t, err
+	}
+
 	plugin, err := plugin.Open(path)
 	if err != nil {
 		return t, err
@@ -58,4 +68,31 @@ func (r *Repository[T]) Load(name string, version string) (T, error) {
 	t = symbol.(T)
 	r.plugins[key] = t
 	return t, nil
+}
+
+func (r *Repository[T]) check(ctx context.Context, name string, version string) (string, error) {
+	plugin := r.cache.Get(name, version)
+	if _, err := os.Stat(plugin.Path); err == nil {
+		return plugin.Path, nil
+	}
+	if err := r.download(ctx, plugin); err != nil {
+		return "", err
+	}
+	return plugin.Path, nil
+}
+
+func (r *Repository[T]) download(ctx context.Context, plugin *Plugin) error {
+	downloader := r.Downloader
+	if downloader == nil {
+		return errors.NewNotSupported("plugin repository does not support downloads")
+	}
+	writer, err := plugin.Create()
+	if err != nil {
+		return err
+	}
+	err = r.Downloader(ctx, plugin.Name, plugin.Version, writer)
+	if err != nil {
+		return err
+	}
+	return nil
 }

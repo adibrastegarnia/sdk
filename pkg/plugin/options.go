@@ -10,7 +10,8 @@ const (
 )
 
 type RepoOptions struct {
-	Symbol string
+	Symbol     string
+	Downloader DownloadFunc
 }
 
 func (o RepoOptions) apply(opts ...RepoOption) {
@@ -31,6 +32,12 @@ func WithRepoOptions(options RepoOptions) RepoOption {
 func WithSymbol(symbol string) RepoOption {
 	return func(options *RepoOptions) {
 		options.Symbol = symbol
+	}
+}
+
+func WithDownloader(f DownloadFunc) RepoOption {
+	return func(options *RepoOptions) {
+		options.Downloader = f
 	}
 }
 
