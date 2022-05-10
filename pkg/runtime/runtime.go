@@ -10,7 +10,6 @@ import (
 	"github.com/atomix/sdk/pkg/logging"
 	"github.com/atomix/sdk/pkg/runtime/controller"
 	"github.com/atomix/sdk/pkg/runtime/driver"
-	"github.com/atomix/sdk/pkg/version"
 	"sync"
 )
 
@@ -39,12 +38,7 @@ func (r *Runtime) Run() error {
 		return err
 	}
 	r.controller = controller
-
-	drivers, err := driver.NewRepository(driver.WithRepositoryOptions(r.Repository))
-	if err != nil {
-		return err
-	}
-	r.drivers = drivers
+	r.drivers = driver.NewRepository(controller, driver.WithRepoOptions(r.Repository))
 	return nil
 }
 
@@ -72,28 +66,23 @@ func (r *Runtime) connect(ctx context.Context, name string) (driver.Conn, error)
 		return conn, nil
 	}
 
-	watchCh := make(chan runtimev1.Cluster)
-	if err := r.controller.WatchCluster(context.Background(), name, watchCh); err != nil {
+	watchCh := make(chan *runtimev1.ConnectionInfo)
+	if err := r.controller.Connect(context.Background(), name, watchCh); err != nil {
 		return nil, err
 	}
 
 	select {
-	case cluster, ok := <-watchCh:
+	case info, ok := <-watchCh:
 		if !ok {
 			return nil, context.Canceled
 		}
 
-		pluginInfo := driver.PluginInfo{
-			Name:       cluster.Driver.Name,
-			Version:    cluster.Driver.Version,
-			APIVersion: version.Version(),
-		}
-		driver, err := r.drivers.Load(ctx, pluginInfo)
+		driver, err := r.drivers.GetDriver(ctx, info.Driver.Name, info.Driver.Version)
 		if err != nil {
 			return nil, err
 		}
 
-		conn, err := driver.Connect(ctx, cluster.Config)
+		conn, err := driver.Connect(ctx, info.Config)
 		if err != nil {
 			return nil, err
 		}
@@ -122,9 +111,6 @@ func (r *Runtime) connect(ctx context.Context, name string) (driver.Conn, error)
 }
 
 func (r *Runtime) Shutdown() error {
-	if err := r.drivers.Close(); err != nil {
-		return err
-	}
 	if err := r.controller.Close(); err != nil {
 		return err
 	}

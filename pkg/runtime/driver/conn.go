@@ -9,6 +9,8 @@ import (
 	"github.com/atomix/sdk/pkg/config"
 )
 
+type Connector[C any] func(ctx context.Context, config C) (Client, error)
+
 type Conn interface {
 	Client() Client
 	Context() context.Context

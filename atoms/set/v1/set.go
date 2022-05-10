@@ -18,12 +18,12 @@ var Atom = atom.New[Set](clientFactory, func(server *grpc.Server, service *atom.
 })
 
 // clientFactory is the set/v1 client factory
-var clientFactory = atom.NewClientFactory[Set](func(client driver.Client) (*atom.Client[Set], bool) {
+var clientFactory = func(client driver.Client) (*atom.Client[Set], bool) {
 	if setClient, ok := client.(SetClient); ok {
 		return atom.NewClient[Set](setClient.GetSet), true
 	}
 	return nil, false
-})
+}
 
 type SetClient interface {
 	GetSet(ctx context.Context, name string) (Set, error)

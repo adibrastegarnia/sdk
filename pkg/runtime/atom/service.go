@@ -11,25 +11,23 @@ import (
 	"sync"
 )
 
-type Connector interface {
-	Connect(ctx context.Context, name string) (driver.Conn, error)
-}
+type Connector func(ctx context.Context, name string) (driver.Conn, error)
 
-func NewService[T Atom](connector Connector, clientFactory *ClientFactory[T], proxies *Registry[T]) *Service[T] {
+func NewService[T Atom](connector Connector, resolver ClientResolver[T], proxies *Registry[T]) *Service[T] {
 	return &Service[T]{
-		connector:     connector,
-		clientFactory: clientFactory,
-		proxies:       proxies,
-		clusters:      make(map[string]*Cluster[T]),
+		connector: connector,
+		resolver:  resolver,
+		proxies:   proxies,
+		clusters:  make(map[string]*Cluster[T]),
 	}
 }
 
 type Service[T Atom] struct {
-	connector     Connector
-	clientFactory *ClientFactory[T]
-	proxies       *Registry[T]
-	clusters      map[string]*Cluster[T]
-	mu            sync.RWMutex
+	connector Connector
+	resolver  ClientResolver[T]
+	proxies   *Registry[T]
+	clusters  map[string]*Cluster[T]
+	mu        sync.RWMutex
 }
 
 func (m *Service[T]) GetCluster(ctx context.Context, name string) (*Cluster[T], error) {
@@ -56,12 +54,12 @@ func (m *Service[T]) newCluster(ctx context.Context, name string) (*Cluster[T], 
 		return cluster, nil
 	}
 
-	conn, err := m.connector.Connect(ctx, name)
+	conn, err := m.connector(ctx, name)
 	if err != nil {
 		return nil, err
 	}
 
-	client, ok := m.clientFactory.GetClient(conn.Client())
+	client, ok := m.resolver(conn.Client())
 	if !ok {
 		return nil, errors.NewNotSupported("primitive type not supported by client for cluster '%s'", cluster)
 	}

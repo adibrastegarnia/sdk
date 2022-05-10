@@ -18,12 +18,12 @@ var Atom = atom.New[Counter](clientFactory, func(server *grpc.Server, service *a
 })
 
 // clientFactory is the counter/v1 client factory
-var clientFactory = atom.NewClientFactory[Counter](func(client driver.Client) (*atom.Client[Counter], bool) {
+var clientFactory = func(client driver.Client) (*atom.Client[Counter], bool) {
 	if counterClient, ok := client.(CounterClient); ok {
 		return atom.NewClient[Counter](counterClient.GetCounter), true
 	}
 	return nil, false
-})
+}
 
 type CounterClient interface {
 	GetCounter(ctx context.Context, name string) (Counter, error)

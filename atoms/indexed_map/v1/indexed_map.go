@@ -18,12 +18,12 @@ var Atom = atom.New[IndexedMap](clientFactory, func(server *grpc.Server, service
 })
 
 // clientFactory is the indexed_map/v1 client factory
-var clientFactory = atom.NewClientFactory[IndexedMap](func(client driver.Client) (*atom.Client[IndexedMap], bool) {
+var clientFactory = func(client driver.Client) (*atom.Client[IndexedMap], bool) {
 	if indexedMapClient, ok := client.(IndexedMapClient); ok {
 		return atom.NewClient[IndexedMap](indexedMapClient.GetIndexedMap), true
 	}
 	return nil, false
-})
+}
 
 type IndexedMapClient interface {
 	GetIndexedMap(ctx context.Context, name string) (IndexedMap, error)

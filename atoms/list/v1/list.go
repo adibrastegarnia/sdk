@@ -18,12 +18,12 @@ var Atom = atom.New[List](clientFactory, func(server *grpc.Server, service *atom
 })
 
 // clientFactory is the list/v1 client factory
-var clientFactory = atom.NewClientFactory[List](func(client driver.Client) (*atom.Client[List], bool) {
+var clientFactory = func(client driver.Client) (*atom.Client[List], bool) {
 	if listClient, ok := client.(ListClient); ok {
 		return atom.NewClient[List](listClient.GetList), true
 	}
 	return nil, false
-})
+}
 
 type ListClient interface {
 	GetList(ctx context.Context, name string) (List, error)

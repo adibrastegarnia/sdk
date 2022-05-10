@@ -6,6 +6,8 @@ package controller
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	runtimev1 "github.com/atomix/api/pkg/atomix/runtime/v1"
 	"github.com/atomix/sdk/pkg/errors"
@@ -48,25 +50,12 @@ func (c *Client) connect() error {
 	return nil
 }
 
-func (c *Client) GetCluster(ctx context.Context, name string) (runtimev1.Cluster, error) {
+func (c *Client) Connect(ctx context.Context, cluster string, ch chan<- *runtimev1.ConnectionInfo) error {
 	client := runtimev1.NewControllerClient(c.conn)
-	request := &runtimev1.GetClusterRequest{
-		Name: name,
+	request := &runtimev1.ConnectRequest{
+		Cluster: cluster,
 	}
-	response, err := client.GetCluster(ctx, request)
-	if err != nil {
-		return runtimev1.Cluster{}, errors.FromProto(err)
-	}
-	return response.Cluster, nil
-}
-
-func (c *Client) WatchCluster(ctx context.Context, name string, ch chan<- runtimev1.Cluster) error {
-	client := runtimev1.NewControllerClient(c.conn)
-	request := &runtimev1.ListClustersRequest{
-		Name:  name,
-		Watch: true,
-	}
-	stream, err := client.ListClusters(ctx, request)
+	stream, err := client.Connect(ctx, request)
 	if err != nil {
 		return errors.FromProto(err)
 	}
@@ -80,10 +69,112 @@ func (c *Client) WatchCluster(ctx context.Context, name string, ch chan<- runtim
 				}
 				return
 			}
-			ch <- response.Cluster
+			ch <- response.Connection
 		}
 	}()
 	return nil
+}
+
+func (c *Client) GetAtom(ctx context.Context, name string, version string, writer io.Writer) error {
+	client := runtimev1.NewControllerClient(c.conn)
+	request := &runtimev1.GetAtomRequest{
+		AtomInfo: runtimev1.AtomInfo{
+			Name:    name,
+			Version: version,
+		},
+	}
+	stream, err := client.GetAtom(ctx, request)
+	if err != nil {
+		return errors.FromProto(err)
+	}
+
+	sha := sha256.New()
+	for {
+		response, err := stream.Recv()
+		if err != nil {
+			return err
+		}
+
+		switch r := response.Plugin.(type) {
+		case *runtimev1.GetAtomResponse_Chunk:
+			_, err := writer.Write(r.Chunk.Data)
+			if err != nil {
+				return err
+			}
+
+			_, err = sha.Write(r.Chunk.Data)
+			if err != nil {
+				return err
+			}
+		case *runtimev1.GetAtomResponse_Trailer:
+			hash := hex.EncodeToString(sha.Sum(nil))
+			if hash != r.Trailer.Checksum {
+				return errors.NewFault("checksum for Atom %s/%s did not match", name, version)
+			}
+			return nil
+		}
+	}
+}
+
+func (c *Client) GetAtoms(ctx context.Context) ([]runtimev1.AtomInfo, error) {
+	client := runtimev1.NewControllerClient(c.conn)
+	request := &runtimev1.ListAtomsRequest{}
+	response, err := client.ListAtoms(ctx, request)
+	if err != nil {
+		return nil, errors.FromProto(err)
+	}
+	return response.Atoms, nil
+}
+
+func (c *Client) GetDriver(ctx context.Context, name string, version string, writer io.Writer) error {
+	client := runtimev1.NewControllerClient(c.conn)
+	request := &runtimev1.GetDriverRequest{
+		DriverInfo: runtimev1.DriverInfo{
+			Name:    name,
+			Version: version,
+		},
+	}
+	stream, err := client.GetDriver(ctx, request)
+	if err != nil {
+		return errors.FromProto(err)
+	}
+
+	sha := sha256.New()
+	for {
+		response, err := stream.Recv()
+		if err != nil {
+			return err
+		}
+
+		switch r := response.Plugin.(type) {
+		case *runtimev1.GetDriverResponse_Chunk:
+			_, err := writer.Write(r.Chunk.Data)
+			if err != nil {
+				return err
+			}
+
+			_, err = sha.Write(r.Chunk.Data)
+			if err != nil {
+				return err
+			}
+		case *runtimev1.GetDriverResponse_Trailer:
+			hash := hex.EncodeToString(sha.Sum(nil))
+			if hash != r.Trailer.Checksum {
+				return errors.NewFault("checksum for Driver %s/%s did not match", name, version)
+			}
+			return nil
+		}
+	}
+}
+
+func (c *Client) GetDrivers(ctx context.Context) ([]runtimev1.DriverInfo, error) {
+	client := runtimev1.NewControllerClient(c.conn)
+	request := &runtimev1.ListDriversRequest{}
+	response, err := client.ListDrivers(ctx, request)
+	if err != nil {
+		return nil, errors.FromProto(err)
+	}
+	return response.Drivers, nil
 }
 
 func (c *Client) Close() error {

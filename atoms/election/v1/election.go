@@ -18,12 +18,12 @@ var Atom = atom.New[LeaderElection](clientFactory, func(server *grpc.Server, ser
 })
 
 // clientFactory is the election/v1 client factory
-var clientFactory = atom.NewClientFactory[LeaderElection](func(client driver.Client) (*atom.Client[LeaderElection], bool) {
+var clientFactory = func(client driver.Client) (*atom.Client[LeaderElection], bool) {
 	if electionClient, ok := client.(LeaderElectionClient); ok {
 		return atom.NewClient[LeaderElection](electionClient.GetLeaderElection), true
 	}
 	return nil, false
-})
+}
 
 type LeaderElectionClient interface {
 	GetLeaderElection(ctx context.Context, name string) (LeaderElection, error)

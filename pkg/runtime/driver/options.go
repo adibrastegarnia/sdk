@@ -5,7 +5,7 @@
 package driver
 
 type Options struct {
-	Repository RepositoryOptions `yaml:"repository,omitempty"`
+	Repository RepoOptions `yaml:"repository,omitempty"`
 }
 
 func (o Options) apply(opts ...Option) {
@@ -22,44 +22,26 @@ func WithOptions(options Options) Option {
 	}
 }
 
-type RepositoryOptions struct {
-	Registry RegistryOptions `yaml:"registry"`
-	Path     string          `yaml:"path"`
+type RepoOptions struct {
+	Path string `yaml:"path"`
 }
 
-type RegistryOptions struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
-}
-
-func (o RepositoryOptions) apply(opts ...RepositoryOption) {
+func (o RepoOptions) apply(opts ...RepoOption) {
 	for _, opt := range opts {
 		opt(&o)
 	}
 }
 
-type RepositoryOption func(*RepositoryOptions)
+type RepoOption func(*RepoOptions)
 
-func WithRepositoryOptions(options RepositoryOptions) RepositoryOption {
-	return func(opts *RepositoryOptions) {
+func WithRepoOptions(options RepoOptions) RepoOption {
+	return func(opts *RepoOptions) {
 		*opts = options
 	}
 }
 
-func WithRegistryHost(host string) RepositoryOption {
-	return func(options *RepositoryOptions) {
-		options.Registry.Host = host
-	}
-}
-
-func WithRegistryPort(port int) RepositoryOption {
-	return func(options *RepositoryOptions) {
-		options.Registry.Port = port
-	}
-}
-
-func WithPath(path string) RepositoryOption {
-	return func(options *RepositoryOptions) {
+func WithRepoPath(path string) RepoOption {
+	return func(options *RepoOptions) {
 		options.Path = path
 	}
 }

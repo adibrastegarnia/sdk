@@ -18,12 +18,12 @@ var Atom = atom.New[Map](clientFactory, func(server *grpc.Server, service *atom.
 })
 
 // clientFactory is the map/v1 client factory
-var clientFactory = atom.NewClientFactory[Map](func(client driver.Client) (*atom.Client[Map], bool) {
+var clientFactory = func(client driver.Client) (*atom.Client[Map], bool) {
 	if mapClient, ok := client.(MapClient); ok {
 		return atom.NewClient[Map](mapClient.GetMap), true
 	}
 	return nil, false
-})
+}
 
 type MapClient interface {
 	GetMap(ctx context.Context, name string) (Map, error)

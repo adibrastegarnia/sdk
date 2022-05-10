@@ -18,12 +18,12 @@ var Atom = atom.New[Lock](clientFactory, func(server *grpc.Server, service *atom
 })
 
 // clientFactory is the lock/v1 client factory
-var clientFactory = atom.NewClientFactory[Lock](func(client driver.Client) (*atom.Client[Lock], bool) {
+var clientFactory = func(client driver.Client) (*atom.Client[Lock], bool) {
 	if lockClient, ok := client.(LockClient); ok {
 		return atom.NewClient[Lock](lockClient.GetLock), true
 	}
 	return nil, false
-})
+}
 
 type LockClient interface {
 	GetLock(ctx context.Context, name string) (Lock, error)

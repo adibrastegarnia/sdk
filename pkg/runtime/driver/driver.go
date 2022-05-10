@@ -30,7 +30,7 @@ func (d *configurableDriver[C]) Connect(ctx context.Context, bytes []byte) (Conn
 	if err != nil {
 		return nil, err
 	}
-	conn, err := d.connector.Connect(ctx, config)
+	conn, err := d.connector(ctx, config)
 	if err != nil {
 		return nil, err
 	}

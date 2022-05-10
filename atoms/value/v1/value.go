@@ -18,12 +18,12 @@ var Atom = atom.New[Value](clientFactory, func(server *grpc.Server, service *ato
 })
 
 // clientFactory is the value/v1 client factory
-var clientFactory = atom.NewClientFactory[Value](func(client driver.Client) (*atom.Client[Value], bool) {
+var clientFactory = func(client driver.Client) (*atom.Client[Value], bool) {
 	if valueClient, ok := client.(ValueClient); ok {
 		return atom.NewClient[Value](valueClient.GetValue), true
 	}
 	return nil, false
-})
+}
 
 type ValueClient interface {
 	GetValue(ctx context.Context, name string) (Value, error)

@@ -12,42 +12,29 @@ import (
 
 type Registrar[T Atom] func(*grpc.Server, *Service[T], *Registry[T])
 
-func New[T Atom](t *ClientFactory[T], registrar Registrar[T]) *Type[T] {
+func New[T Atom](resolver ClientResolver[T], registrar Registrar[T]) *Type[T] {
 	return &Type[T]{
-		factory:   t,
+		resolver:  resolver,
 		registrar: registrar,
 		registry:  NewRegistry[T](),
 	}
 }
 
 type Type[T Atom] struct {
-	factory   *ClientFactory[T]
+	resolver  ClientResolver[T]
 	registrar Registrar[T]
 	registry  *Registry[T]
 }
 
 func (a *Type[T]) Register(server *grpc.Server, connector Connector) {
-	a.registrar(server, NewService[T](connector, a.factory, a.registry), a.registry)
+	a.registrar(server, NewService[T](connector, a.resolver, a.registry), a.registry)
 }
 
 type Atom interface {
 	Close(ctx context.Context) error
 }
 
-// NewClientFactory creates a new ClientFactory for an atom
-func NewClientFactory[T Atom](factory func(client driver.Client) (*Client[T], bool)) *ClientFactory[T] {
-	return &ClientFactory[T]{
-		factory: factory,
-	}
-}
-
-type ClientFactory[T Atom] struct {
-	factory func(client driver.Client) (*Client[T], bool)
-}
-
-func (t *ClientFactory[T]) GetClient(client driver.Client) (*Client[T], bool) {
-	return t.factory(client)
-}
+type ClientResolver[T Atom] func(client driver.Client) (*Client[T], bool)
 
 // NewClient creates a new client for the given atom type
 func NewClient[T Atom](getter func(ctx context.Context, name string) (T, error)) *Client[T] {

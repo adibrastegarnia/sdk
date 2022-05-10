@@ -12,8 +12,8 @@ import (
 )
 
 type Options struct {
-	Controller controller.Options       `yaml:"controller"`
-	Repository driver.RepositoryOptions `yaml:"repository"`
+	Controller controller.Options `yaml:"controller"`
+	Repository driver.RepoOptions `yaml:"repository"`
 }
 
 func (o Options) apply(opts ...Option) {
@@ -71,7 +71,7 @@ func WithPort(port int) ServiceOption {
 func WithAtom[T atom.Atom](atom *atom.Type[T]) ServiceOption {
 	return func(options *ServiceOptions) {
 		options.Atoms = append(options.Atoms, func(server *grpc.Server, runtime *Runtime) {
-			atom.Register(server, runtime)
+			atom.Register(server, runtime.Connect)
 		})
 	}
 }
@@ -85,18 +85,6 @@ func WithControllerHost(host string) Option {
 func WithControllerPort(port int) Option {
 	return func(options *Options) {
 		options.Controller.Port = port
-	}
-}
-
-func WithRegistryHost(host string) Option {
-	return func(options *Options) {
-		options.Repository.Registry.Host = host
-	}
-}
-
-func WithRegistryPort(port int) Option {
-	return func(options *Options) {
-		options.Repository.Registry.Port = port
 	}
 }
 

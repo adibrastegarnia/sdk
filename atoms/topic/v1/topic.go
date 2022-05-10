@@ -18,12 +18,12 @@ var Atom = atom.New[Topic](clientFactory, func(server *grpc.Server, service *ato
 })
 
 // clientFactory is the topic/v1 client factory
-var clientFactory = atom.NewClientFactory[Topic](func(client driver.Client) (*atom.Client[Topic], bool) {
+var clientFactory = func(client driver.Client) (*atom.Client[Topic], bool) {
 	if topicClient, ok := client.(TopicClient); ok {
 		return atom.NewClient[Topic](topicClient.GetTopic), true
 	}
 	return nil, false
-})
+}
 
 type TopicClient interface {
 	GetTopic(ctx context.Context, name string) (Topic, error)
