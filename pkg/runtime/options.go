@@ -4,10 +4,6 @@
 
 package runtime
 
-import (
-	"github.com/atomix/sdk/pkg/atom"
-)
-
 type Options struct {
 	Host  string
 	Port  int
@@ -45,7 +41,7 @@ func WithPort(port int) Option {
 	}
 }
 
-func WithAtom[T atom.Atom](name, version string) Option {
+func WithAtom(name, version string) Option {
 	return func(options *Options) {
 		options.Atoms = append(options.Atoms, AtomOptions{
 			Name:    name,
