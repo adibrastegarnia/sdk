@@ -7,14 +7,17 @@ package driver
 import (
 	"context"
 	"github.com/atomix/sdk/pkg/config"
+	"github.com/atomix/sdk/pkg/logging"
 	"github.com/atomix/sdk/pkg/plugin"
 )
 
+var log = logging.GetLogger()
+
 const pluginSymbol = "Driver"
 
-type Repository = plugin.Repository[Driver]
+type Repository plugin.Repository[Driver]
 
-func NewRepository(opts ...RepoOption) *Repository {
+func NewRepository(opts ...RepoOption) Repository {
 	var options RepoOptions
 	options.apply(opts...)
 	cache := plugin.NewCache(plugin.WithPath(options.Path))

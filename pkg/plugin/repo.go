@@ -13,10 +13,10 @@ import (
 	"sync"
 )
 
-func NewRepository[T any](cache *Cache, opts ...RepoOption) *Repository[T] {
+func NewRepository[T any](cache *Cache, opts ...RepoOption) Repository[T] {
 	var options RepoOptions
 	options.apply(opts...)
-	return &Repository[T]{
+	return &cacheRepository[T]{
 		options: options,
 		cache:   cache,
 		plugins: make(map[string]T),
@@ -25,14 +25,18 @@ func NewRepository[T any](cache *Cache, opts ...RepoOption) *Repository[T] {
 
 type DownloadFunc func(ctx context.Context, name string, version string, writer io.Writer) error
 
-type Repository[T any] struct {
+type Repository[T any] interface {
+	Load(ctx context.Context, name string, version string) (T, error)
+}
+
+type cacheRepository[T any] struct {
 	options RepoOptions
 	cache   *Cache
 	plugins map[string]T
 	mu      sync.RWMutex
 }
 
-func (r *Repository[T]) Load(ctx context.Context, name string, version string) (T, error) {
+func (r *cacheRepository[T]) Load(ctx context.Context, name string, version string) (T, error) {
 	var t T
 
 	key := getPluginName(name, version)
@@ -70,7 +74,7 @@ func (r *Repository[T]) Load(ctx context.Context, name string, version string) (
 	return t, nil
 }
 
-func (r *Repository[T]) check(ctx context.Context, name string, version string) (string, error) {
+func (r *cacheRepository[T]) check(ctx context.Context, name string, version string) (string, error) {
 	plugin := r.cache.Get(name, version)
 	if _, err := os.Stat(plugin.Path); err == nil {
 		return plugin.Path, nil
@@ -81,7 +85,7 @@ func (r *Repository[T]) check(ctx context.Context, name string, version string) 
 	return plugin.Path, nil
 }
 
-func (r *Repository[T]) download(ctx context.Context, plugin *Plugin) error {
+func (r *cacheRepository[T]) download(ctx context.Context, plugin *Plugin) error {
 	downloader := r.options.Downloader
 	if downloader == nil {
 		return errors.NewNotSupported("plugin repository does not support downloads")

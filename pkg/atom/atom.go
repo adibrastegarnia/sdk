@@ -13,9 +13,9 @@ import (
 
 const pluginSymbol = "Atom"
 
-type Repository = plugin.Repository[Type]
+type Repository plugin.Repository[Type]
 
-func NewRepository(opts ...RepoOption) *Repository {
+func NewRepository(opts ...RepoOption) Repository {
 	var options RepoOptions
 	options.apply(opts...)
 	cache := plugin.NewCache(plugin.WithPath(options.Path))
