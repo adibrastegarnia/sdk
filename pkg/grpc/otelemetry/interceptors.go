@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package otel
+package otelemetry
 
 import (
 	"context"
@@ -48,5 +48,48 @@ func UnaryServerTelemetryInterceptor(opts ...InstrumentationOption) grpc.UnarySe
 		}
 
 		return resp, err
+	}
+}
+
+// StreamTelemetryServerInterceptor returns a grpc.StreamServerInterceptor suitable
+// for use in a grpc.NewServer call.
+func StreamTelemetryServerInterceptor(opts ...InstrumentationOption) grpc.StreamServerInterceptor {
+	return func(
+		srv interface{},
+		stream grpc.ServerStream,
+		info *grpc.StreamServerInfo,
+		handler grpc.StreamHandler,
+	) error {
+		ctx := stream.Context()
+
+		requestMetadata, _ := metadata.FromIncomingContext(ctx)
+		metadataCopy := requestMetadata.Copy()
+
+		instrumentation := NewInstrumentation(opts)
+		bags, spanCtx := instrumentation.Extract(ctx, &metadataCopy)
+		ctx = baggage.ContextWithBaggage(ctx, bags)
+
+		tracer := instrumentation.NewTracer(trace.WithInstrumentationVersion("1.0.0"))
+
+		name, attr := spanInfo(info.FullMethod, peerFromCtx(ctx))
+		ctx, span := tracer.Start(
+			trace.ContextWithRemoteSpanContext(ctx, spanCtx),
+			name,
+			trace.WithSpanKind(trace.SpanKindServer),
+			trace.WithAttributes(attr...),
+		)
+
+		defer span.End()
+		err := handler(srv, wrapServerStream(ctx, stream))
+
+		if err != nil {
+			s, _ := status.FromError(err)
+			span.SetStatus(codes.Error, s.Message())
+			span.SetAttributes(statusCodeAttr(s.Code()))
+		} else {
+			span.SetAttributes(statusCodeAttr(grpccodes.OK))
+		}
+
+		return err
 	}
 }

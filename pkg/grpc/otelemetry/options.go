@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package otel
+package otelemetry
 
 import (
 	"context"
@@ -47,7 +47,7 @@ type InstrumentationOption func(*InstrumentationOptions)
 func NewInstrumentation(opts []InstrumentationOption) *InstrumentationOptions {
 	c := &InstrumentationOptions{
 		propagators:    otel.GetTextMapPropagator(),
-		tracerProvider: otel.GetTracerProvider(),
+		tracerProvider: trace.NewNoopTracerProvider(),
 		name:           "",
 	}
 	for _, option := range opts {
