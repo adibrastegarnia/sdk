@@ -6,16 +6,13 @@ package otelemetry
 
 import (
 	"context"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"
 	grpc_codes "google.golang.org/grpc/codes"
 	"google.golang.org/grpc/peer"
 	"net"
 	"strings"
-)
-
-const (
-	GRPCStatusCodeKey = attribute.Key("rpc.grpc.status_code")
 )
 
 // spanInfo returns a span name and all appropriate attributes from the gRPC
@@ -77,5 +74,5 @@ func parseFullMethod(fullMethod string) (string, []attribute.KeyValue) {
 
 // statusCodeAttr returns status code attribute based on given gRPC code
 func statusCodeAttr(c grpc_codes.Code) attribute.KeyValue {
-	return GRPCStatusCodeKey.Int64(int64(c))
+	return otelgrpc.GRPCStatusCodeKey.Int64(int64(c))
 }

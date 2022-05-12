@@ -6,6 +6,7 @@ package otelemetry
 
 import (
 	"context"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel/baggage"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
@@ -38,13 +39,32 @@ func UnaryServerTelemetryInterceptor(opts ...InstrumentationOption) grpc.UnarySe
 		)
 
 		defer span.End()
+		e := event{
+			messageType: otelgrpc.RPCMessageTypeReceived,
+			message:     req,
+			id:          1,
+		}
+		e.Send(ctx)
+
 		resp, err := handler(ctx, req)
 		if err != nil {
 			s, _ := status.FromError(err)
 			span.SetStatus(codes.Error, s.Message())
 			span.SetAttributes(statusCodeAttr(s.Code()))
+			e = event{
+				messageType: otelgrpc.RPCMessageTypeSent,
+				message:     s.Proto(),
+				id:          1,
+			}
+			e.Send(ctx)
+
 		} else {
 			span.SetAttributes(statusCodeAttr(grpccodes.OK))
+			e = event{
+				messageType: otelgrpc.RPCMessageTypeSent,
+				message:     resp,
+				id:          1,
+			}
 		}
 
 		return resp, err

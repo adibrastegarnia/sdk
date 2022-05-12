@@ -6,29 +6,43 @@ package otelemetry
 
 import (
 	"context"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 )
 
 type wrappedServerStream struct {
 	grpc.ServerStream
 	ctx                    context.Context
-	receivedMessageCounter int32
-	sentMessageCounter     int32
+	receivedMessageCounter int
+	sentMessageCounter     int
 }
 
 func (w *wrappedServerStream) RecvMsg(m interface{}) error {
 	err := w.ServerStream.RecvMsg(m)
 
-	if err == nil {
-		w.receivedMessageCounter++
+	if err != nil {
+		return err
 	}
+	w.receivedMessageCounter++
+	e := event{
+		messageType: otelgrpc.RPCMessageTypeReceived,
+		id:          w.receivedMessageCounter,
+		message:     m,
+	}
+	e.Send(w.Context())
 
-	return err
+	return nil
 }
 
 func (w *wrappedServerStream) SendMsg(m interface{}) error {
 	err := w.ServerStream.SendMsg(m)
 	w.sentMessageCounter++
+	e := event{
+		messageType: otelgrpc.RPCMessageTypeSent,
+		message:     m,
+		id:          w.sentMessageCounter,
+	}
+	e.Send(w.Context())
 	return err
 }
 
